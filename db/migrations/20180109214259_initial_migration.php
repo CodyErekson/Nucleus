@@ -33,17 +33,19 @@ class InitialMigration extends AbstractMigration
 			->addColumn('username', 'string')
 			->addColumn('email', 'string')
 			->addColumn('password', 'string')
-			->addColumn('created_at', 'datetime')
-			->addColumn('updated_at', 'datetime')
-			->addIndex(['username', 'email'], ['unique' => true])
+			->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
+			->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
+			->addColumn('active', 'boolean', ['default' => 1])
+			->addIndex(['username'], ['unique' => true])
+			->addIndex(['email'], ['unique' => true])
 			->create();
 
 		$table = $this->table('tokens');
 		$table->addColumn('uuid', 'string')
 			->addColumn('token', 'string')
-			->addColumn('created_at', 'datetime')
-			->addColumn('updated_at', 'datetime')
-			->addColumn('expiration', 'datetime')
+			->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
+			->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
+			->addColumn('expiration', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
 			->create();
     }
 }

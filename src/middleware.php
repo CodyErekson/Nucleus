@@ -4,12 +4,13 @@
 // e.g: $app->add(new \Slim\Csrf\Guard);
 
 // JSON Web Token
-/*$app->add(new \Slim\Middleware\JwtAuthentication([
+$app->add(new \Slim\Middleware\JwtAuthentication([
 	"secret" => getenv("JWT_SECRET"),
 	"secure" => false,
-	"path" => "/api/",
+	"path" => ["/api/", "/test/"],
+	"passthrough" => ["/api/user/login/"],
 	"relaxed" => ["localhost", "nucleus.local"]
-]));*/
+]));
 
 // A middleware for enabling CORS
 $app->add(function ($req, $res, $next) {

@@ -42,13 +42,41 @@ $container['jwt'] = function ($c) {
 	return new Firebase\JWT\JWT();
 };
 
+$container['uuid'] = function ($c) {
+/*	return function($name) {
+		$uuid5 = Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, $name);
+		return $uuid5->toString();
+	};*/
+	return Ramsey\Uuid\Uuid::uuid4()->toString();
+};
+
+// Helper Classes
 $container['token_manager'] = function ($c) {
 	return new Nucleus\Helpers\TokenManager($c['debug.log']);
 };
 
-$container['uuid'] = function ($c) {
-	return function($name) {
-		$uuid5 = Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, $name);
-		return $uuid5->toString();
-	};
+$container['user_manager'] = function ($c) {
+	return new Nucleus\Helpers\UserManager($c['debug.log']);
+};
+
+
+// Controller Classes
+$container['HomeController'] = function($c) {
+	$hc = new Nucleus\Controllers\HomeController($c->get("renderer"));
+	$logs = explode(",", getenv('LOGS'));
+	foreach($logs as $log) {
+		$log_name = $log . ".log";
+		$hc->addLogger($c[$log_name], $log_name);
+	}
+	return $hc;
+};
+
+$container['UserController'] = function($c) {
+	$hc = new Nucleus\Controllers\UserController($c->get("renderer"), $c->user_manager, $c->token_manager, $c->jwt, $c->uuid);
+	$logs = explode(",", getenv('LOGS'));
+	foreach($logs as $log) {
+		$log_name = $log . ".log";
+		$hc->addLogger($c[$log_name], $log_name);
+	}
+	return $hc;
 };

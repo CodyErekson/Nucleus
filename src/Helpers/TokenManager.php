@@ -14,7 +14,7 @@ class TokenManager {
 
 	public function setUserId($uuid)
 	{
-		$this->$uuid = $uuid;
+		$this->uuid = $uuid;
 	}
 
 	public function cleanExpired()

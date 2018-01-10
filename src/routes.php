@@ -5,7 +5,8 @@
 $app->get('/[{name}]', function ($request, $response, $args) {
 	// Sample log message
 	//$this->logger->info("Slim-Skeleton '/' route");
-print_r($this);
+	$this['main.log']->warning("HERE");
+	echo get_class($this['main.log']);
 
 
 	// Render index view
@@ -18,7 +19,7 @@ $app->get('/test/', function($request, $response) {
 });
 
 // Authenticate route.
-$app->post('/authenticate/', function ($request, $response) {
+$app->post('/api/user/login/', function ($request, $response) {
 	$data = $request->getParsedBody();
 	$users = \Nucleus\Models\User::all();
 	$login = $data['username'];
@@ -26,60 +27,72 @@ $app->post('/authenticate/', function ($request, $response) {
 	foreach ($users as $key => $user) {
 		if ( ( $user->username == $login ) && ( $user->password == md5($password) ) ) {
 			$current_user = $user;
+			break;
 		}
 	}
 	if (!isset($current_user)) {
-		//echo json_encode("No user found");
+		$this['debug.log']->debug($login . " not found in users");
 		return $response->withStatus(401);
 	} else {
-		// Find a corresponding token.
+		// Find a corresponding token
+		$this['debug.log']->debug('Looking for token:', $current_user->toArray());
 		try {
-			$token_from_db = false;
-			$token_from_db = \Nucleus\Models\Token::where('user_id', '=', $current_user->id)->find(1);
-			$this->logger->info(print_r($token_from_db,1));
-			if (count($token_from_db)) {
-				echo json_encode([
-					"token"      => $token_from_db->token,
+			$token = \Nucleus\Models\Token::where('user_id', '=', $current_user->id)
+				->where('expiration', '>', date('Y-m-d H:i:s'))
+				->firstOrFail();
+			$tm = $this->token_manager;
+			$tm->setUserId($current_user->id);
+			$tm->cleanExpired();
+			$this['debug.log']->debug('Stored token found', $token->toArray());
+			if (count($token)) {
+				$out = [
+					"token"      => $token->token,
 					"username" => $current_user->username
-				]);
+				];
+				return $response->withJson($out);
 			}
-		} catch (Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-			return $response->withStatus(400);
-			echo '{"error":{"text":' . $e->getMessage() . '}}';
-		}
-
-		// Create a new token if a user is found but not a corresponding token
-		if (count($current_user) != 0 && !count($token_from_db)) {
-			$key = getenv('JWT_SECRET');
-			$payload = array(
-				"iss"     => getenv('HOST'),
-				"iat"     => time(),
-				"exp"     => time() + (3600 * 24 * 15),
-				"context" => [
-					"user" => [
-						"username" => $current_user->username,
-						"user_id"    => $current_user->id
+		} catch ( Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+			// Create a new token if a user is found but not a corresponding token
+			//if (count($current_user) != 0 && !count($token_from_db)) {
+				$key = getenv('JWT_SECRET');
+				$payload = array(
+					"iss"     => getenv('HOST'),
+					"iat"     => time(),
+					"exp"     => time() + (3600 * 24 * 15),
+					"context" => [
+						"user" => [
+							"username" => $current_user->username,
+							"user_id"    => $current_user->id
+						]
 					]
-				]
-			);
-			try {
-				$jwt = $this['jwt']::encode($payload, $key);
-			} catch (Exception $e) {
-				return $response->withStatus(400);
-				echo json_encode($e);
-			}
-			$this->logger->info($jwt);
-			$token = new \Nucleus\Models\Token;
-			$token->user_id = $current_user->id;
-			$token->token = $jwt;
-			$token->expiration = date('Y-m-d H:i:s', $payload['exp']);
-			$this->logger->info(date('Y-m-d H:i:s', $payload['exp']));
-			$token->setCreatedAt($payload['iat']);
-			$token->save();
-			echo json_encode([
-				"token"      => $jwt,
-				"username" => $current_user['user_id']
-			]);
+				);
+				try {
+					$jwt = $this['jwt']::encode($payload, $key);
+				} catch (Exception $ee) {
+					$this['debug.log']->debug($ee->getMessage(), ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
+					$this['error.log']->error($ee->getMessage(), ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
+					return $response->withStatus(400);
+				}
+				$this['debug.log']->debug('New JWT token', ['token' => $jwt, 'payload' => $data]);
+				$token = new \Nucleus\Models\Token;
+				$tm = $this->token_manager;
+				$tm->setUserId($current_user->id);
+				$tm->flush();
+				$token->user_id = $current_user->id;
+				$token->token = $jwt;
+				$token->expiration = date('Y-m-d H:i:s', $payload['exp']);
+				$token->setCreatedAt($payload['iat']);
+				$token->save();
+				$out = [
+					"token"      => $token->token,
+					"username" => $current_user->username
+				];
+				return $response->withJson($out);
+			//}
+		} catch ( Exception $e ){
+			$this['debug.log']->debug($e->getMessage(), ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
+			$this['error.log']->error($e->getMessage(), ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
+			return $response->withStatus(400);
 		}
 	}
 });

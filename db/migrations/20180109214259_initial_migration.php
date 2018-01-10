@@ -28,16 +28,18 @@ class InitialMigration extends AbstractMigration
      */
     public function change()
     {
-		$table = $this->table('users');
-		$table->addColumn('username', 'string')
+		$table = $this->table('users', ['id' => false, 'primary_key' => 'uuid']);
+		$table->addColumn('uuid', 'string')
+			->addColumn('username', 'string')
 			->addColumn('email', 'string')
 			->addColumn('password', 'string')
 			->addColumn('created_at', 'datetime')
 			->addColumn('updated_at', 'datetime')
+			->addIndex(['username', 'email'], ['unique' => true])
 			->create();
 
 		$table = $this->table('tokens');
-		$table->addColumn('user_id', 'integer')
+		$table->addColumn('uuid', 'string')
 			->addColumn('token', 'string')
 			->addColumn('created_at', 'datetime')
 			->addColumn('updated_at', 'datetime')

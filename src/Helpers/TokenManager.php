@@ -5,21 +5,21 @@ namespace Nucleus\Helpers;
 class TokenManager {
 
 	private $logger = null;
-	private $user_id = null;
+	private $uuid = null;
 
 	public function __construct(\Monolog\Logger $logger)
 	{
 		$this->logger = $logger;
 	}
 
-	public function setUserId($user_id)
+	public function setUserId($uuid)
 	{
-		$this->user_id = $user_id;
+		$this->$uuid = $uuid;
 	}
 
 	public function cleanExpired()
 	{
-		$tokens = \Nucleus\Models\Token::where('user_id', '=', $this->user_id)
+		$tokens = \Nucleus\Models\Token::where('uuid', '=', $this->uuid)
 			->where('expiration', '<', date('Y-m-d H:i:s'))
 			->get();
 
@@ -31,7 +31,7 @@ class TokenManager {
 
 	public function flush()
 	{
-		$tokens = \Nucleus\Models\Token::where('user_id', '=', $this->user_id)->get();
+		$tokens = \Nucleus\Models\Token::where('uuid', '=', $this->uuid)->get();
 
 		$tokens->each(function ($token) {
 			$this->logger->debug('Deleting token:', $token->toArray());

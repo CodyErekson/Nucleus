@@ -4,9 +4,8 @@
 // Just a simple testing route
 $app->get('/[{name}]', function ($request, $response, $args) {
 	// Sample log message
-	//$this->logger->info("Slim-Skeleton '/' route");
-	$this['main.log']->warning("HERE");
-	echo get_class($this['main.log']);
+	$uuid = $this->uuid;
+	$this['debug.log']->debug($uuid('jimmy'));
 
 
 	// Render index view
@@ -37,11 +36,11 @@ $app->post('/api/user/login/', function ($request, $response) {
 		// Find a corresponding token
 		$this['debug.log']->debug('Looking for token:', $current_user->toArray());
 		try {
-			$token = \Nucleus\Models\Token::where('user_id', '=', $current_user->id)
+			$token = \Nucleus\Models\Token::where('uuid', '=', $current_user->uuid)
 				->where('expiration', '>', date('Y-m-d H:i:s'))
 				->firstOrFail();
 			$tm = $this->token_manager;
-			$tm->setUserId($current_user->id);
+			$tm->setUserId($current_user->uuid);
 			$tm->cleanExpired();
 			$this['debug.log']->debug('Stored token found', $token->toArray());
 			if (count($token)) {
@@ -62,7 +61,7 @@ $app->post('/api/user/login/', function ($request, $response) {
 					"context" => [
 						"user" => [
 							"username" => $current_user->username,
-							"user_id"    => $current_user->id
+							"uuid"    => $current_user->uuid
 						]
 					]
 				);
@@ -76,9 +75,9 @@ $app->post('/api/user/login/', function ($request, $response) {
 				$this['debug.log']->debug('New JWT token', ['token' => $jwt, 'payload' => $data]);
 				$token = new \Nucleus\Models\Token;
 				$tm = $this->token_manager;
-				$tm->setUserId($current_user->id);
+				$tm->setUserId($current_user->uuid);
 				$tm->flush();
-				$token->user_id = $current_user->id;
+				$token->uuid = $current_user->uuid;
 				$token->token = $jwt;
 				$token->expiration = date('Y-m-d H:i:s', $payload['exp']);
 				$token->setCreatedAt($payload['iat']);
@@ -95,6 +94,15 @@ $app->post('/api/user/login/', function ($request, $response) {
 			return $response->withStatus(400);
 		}
 	}
+});
+
+$app->post('/api/user/logout/', function ($request, $response) {
+	$this['debug.log']->debug($this->token->context->user->uuid);
+	$uuid = $this->token->context->user->uuid;
+	$tm = $this->token_manager;
+	$tm->setUserId($uuid);
+	$tm->flush();
+	return $response->withStatus(200);
 });
 
 $app->get('/api/user/', function($request, $response) {

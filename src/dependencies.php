@@ -9,14 +9,12 @@ $container['renderer'] = function ($c) {
 	return new Slim\Views\PhpRenderer(realpath($env['env_path'] . getenv('TEMPLATE_ROOT') . '/'));
 };
 
-$container['logs'] = [];
-
 // monolog -- build multiple log handlers based upon $LOGS
 $logs = explode(",", getenv('LOGS'));
 foreach($logs as $log) {
 	$log_name = $log . ".log";
 
-	$container['logs'][$log] = function ($c) use ($log_name) {
+	$container[$log_name] = function ($c) use ($log_name) {
 		$env = $c->get('settings')['env'];
 		$settings = $c->get('settings')['logger'];
 		$path = realpath($env['env_path'] . getenv('LOGS_ROOT')) . '/' . $log_name;
@@ -42,4 +40,8 @@ $container->get('db');
 
 $container['jwt'] = function ($c) {
 	return new Firebase\JWT\JWT();
+};
+
+$container['token_manager'] = function ($c) {
+	return new Nucleus\Helpers\TokenManager($c['debug.log']);
 };

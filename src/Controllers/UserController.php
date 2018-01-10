@@ -48,7 +48,7 @@ class UserController
 		$login = $data['username'];
 		$password = $data['password'];
 		foreach ($users as $key => $user) {
-			if ( ( $user->username == $login ) && ( $user->password == md5($password) ) ) {
+			if ( ( $user->username == $login ) && ( password_verify($password, $user->password) ) ) {
 				$current_user = $user;
 				break;
 			}
@@ -152,6 +152,12 @@ class UserController
 		if ( !isset($data['email']) ){
 			return $response->withStatus(400);
 		}
+		if ( !filter_var($data['email'], FILTER_VALIDATE_EMAIL) ) {
+			$res = $response->withHeader("Content-Type", "application/json");
+			$res = $res->withStatus(400);
+			$res->getBody()->write(json_encode(["error" => "Invalid email"]));
+			return $res;
+		}
 		if ( !isset($data['password']) ){
 			return $response->withStatus(400);
 		}
@@ -179,7 +185,7 @@ class UserController
 		$user->username = $data['username'];
 		$user->email = $data['email'];
 		$user->uuid = $this->uuid->toString();
-		$user->password = md5($data['password']);
+		$user->password = password_hash($data['password'], PASSWORD_BCRYPT);
 		$this->loggers['debug.log']->debug("New user:", $user->toArray());
 
 		try {
@@ -207,7 +213,7 @@ class UserController
 				$res->getBody()->write(json_encode(["error" => "Password does not match confirmation"]));
 				return $res;
 			}
-			$user->password = $data['password'] ? md5($data['password']) : $user->password;
+			$user->password = $data['password'] ? password_hash($data['password'], PASSWORD_BCRYPT) : $user->password;
 		}
 		if ( ( isset($data['password']) ) && ( !isset($data['confirm']) ) ){
 			$res = $response->withHeader("Content-Type", "application/json");
@@ -225,6 +231,12 @@ class UserController
 			$user->username = $data['username'] ?: $user->username;
 		}
 		if ( isset($data['email']) ) {
+			if ( !filter_var($data['email'], FILTER_VALIDATE_EMAIL) ) {
+				$res = $response->withHeader("Content-Type", "application/json");
+				$res = $res->withStatus(400);
+				$res->getBody()->write(json_encode(["error" => "Invalid email"]));
+				return $res;
+			}
 			if (!$this->user_manager->validateEmailUnique($data['email'], $uuid)) {
 				$res = $response->withHeader("Content-Type", "application/json");
 				$res = $res->withStatus(400);

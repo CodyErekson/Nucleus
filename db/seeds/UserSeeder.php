@@ -22,21 +22,21 @@ class UserSeeder extends AbstractSeed
 				'uuid' => Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, 'Cody')->toString(),
 				'username' => 'Cody',
 				'email' => 'cody@erekson.org',
-				'password' => 'fd1f4b15cb78273c37e626ec1b69b1e4',
+				'password' => password_hash('iamcody', PASSWORD_BCRYPT), //iamcody
 				'created_at' => date('Y-m-d H:i:s'),
 			],
 			[
 				'uuid' => Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, 'Bob')->toString(),
 				'username' => 'Bob',
 				'email' => 'bob@gmail.com',
-				'password' => 'e93ac9aef629bb0ea82166a6907a9a4d', //iambob
+				'password' => password_hash('iambob', PASSWORD_BCRYPT), //iambob
 				'created_at' => date('Y-m-d H:i:s'),
 			],
 			[
 				'uuid' => Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, 'Jim')->toString(),
 				'username' => 'Jim',
 				'email' => 'jim@yahoo.com',
-				'password' => 'ecf4fbbeb03457c68c4d4ca38cac73e6', //iamjim
+				'password' => password_hash('iamjim', PASSWORD_BCRYPT), //iamjim
 				'created_at' => date('Y-m-d H:i:s'),
 			]
 		];

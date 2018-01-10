@@ -43,11 +43,7 @@ $container['jwt'] = function ($c) {
 };
 
 $container['uuid'] = function ($c) {
-/*	return function($name) {
-		$uuid5 = Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, $name);
-		return $uuid5->toString();
-	};*/
-	return Ramsey\Uuid\Uuid::uuid4(); //->toString();
+	return Ramsey\Uuid\Uuid::uuid4();
 };
 
 // Helper Classes

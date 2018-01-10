@@ -1,4 +1,5 @@
 <?php
+
 return [
 	'settings' => [
 		'displayErrorDetails' => true, // set to false in production
@@ -12,7 +13,7 @@ return [
 		// Monolog settings
 		'logger' => [
 			'name' => 'nucleus',
-			'level' => \Monolog\Logger::DEBUG,
+			'level' => getenv('LOG_LEVEL')
 		],
 
 		// DB settings

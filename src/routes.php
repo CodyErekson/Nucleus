@@ -21,7 +21,11 @@ $app->get('/api/user/{uuid}', 'UserController:getUser');
 
 $app->post('/api/user/', 'UserController:createUser');
 
-//remember to include header X-Http-Method-Override:PUT
+//remember to include header X-Http-Method-Override:PUT, actually use POST
 $app->put('/api/user/{uuid}', 'UserController:updateUser');
+
+$app->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
+
+$app->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
 
 $app->delete('/api/user/{uuid}', 'UserController:deleteUser');

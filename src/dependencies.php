@@ -45,3 +45,10 @@ $container['jwt'] = function ($c) {
 $container['token_manager'] = function ($c) {
 	return new Nucleus\Helpers\TokenManager($c['debug.log']);
 };
+
+$container['uuid'] = function ($c) {
+	return function($name) {
+		$uuid5 = Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, $name);
+		return $uuid5->toString();
+	};
+};

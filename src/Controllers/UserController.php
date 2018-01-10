@@ -144,6 +144,7 @@ class UserController
 	public function createUser($request, $response, $args)
 	{
 		$data = $request->getParsedBody();
+		$this->loggers['debug.log']->debug("Create user payload:", $data);
 		$user = new \Nucleus\Models\User();
 		if ( !isset($data['username']) ){
 			return $response->withStatus(400);
@@ -154,10 +155,10 @@ class UserController
 		if ( !isset($data['password']) ){
 			return $response->withStatus(400);
 		}
-		if ( !isset($data['password_confirm']) ){
+		if ( !isset($data['confirm']) ){
 			return $response->withStatus(400);
 		}
-		if ( $data['password'] !== $data['password_confirm']){
+		if ( $data['password'] !== $data['confirm']){
 			$res = $response->withHeader("Content-Type", "application/json");
 			$res = $res->withStatus(400);
 			$res->getBody()->write(json_encode(["error" => "Password does not match confirmation"]));
@@ -177,8 +178,9 @@ class UserController
 		}
 		$user->username = $data['username'];
 		$user->email = $data['email'];
-		$user->uuid = $this->uuid;
+		$user->uuid = $this->uuid->toString();
 		$user->password = md5($data['password']);
+		$this->loggers['debug.log']->debug("New user:", $user->toArray());
 
 		try {
 			$user->save();
@@ -197,7 +199,72 @@ class UserController
 		$uuid = $args['uuid'];
 		$data = $request->getParsedBody();
 		$user = \Nucleus\Models\User::find($uuid);
-		$user->username = $data['username'] ?: $user->username;
+
+		if ( ( isset($data['password']) ) && ( isset($data['confirm']) ) ) {
+			if ($data['password'] !== $data['confirm']) {
+				$res = $response->withHeader("Content-Type", "application/json");
+				$res = $res->withStatus(400);
+				$res->getBody()->write(json_encode(["error" => "Password does not match confirmation"]));
+				return $res;
+			}
+			$user->password = $data['password'] ? md5($data['password']) : $user->password;
+		}
+		if ( ( isset($data['password']) ) && ( !isset($data['confirm']) ) ){
+			$res = $response->withHeader("Content-Type", "application/json");
+			$res = $res->withStatus(400);
+			$res->getBody()->write(json_encode(["error" => "Password does not match confirmation"]));
+			return $res;
+		}
+		if ( isset($data['username']) ) {
+			if (!$this->user_manager->validateUsernameUnique($data['username'], $uuid)) {
+				$res = $response->withHeader("Content-Type", "application/json");
+				$res = $res->withStatus(400);
+				$res->getBody()->write(json_encode(["error" => "Username is not available"]));
+				return $res;
+			}
+			$user->username = $data['username'] ?: $user->username;
+		}
+		if ( isset($data['email']) ) {
+			if (!$this->user_manager->validateEmailUnique($data['email'], $uuid)) {
+				$res = $response->withHeader("Content-Type", "application/json");
+				$res = $res->withStatus(400);
+				$res->getBody()->write(json_encode(["error" => "Email is associated with existing user"]));
+				return $res;
+			}
+			$user->email = $data['email'] ?: $user->email;
+		}
+
+		$this->loggers['debug.log']->debug("Updated user:", $user->toArray());
+
+		$user->save();
+
+		return $response->getBody()->write($user->toJson());
+	}
+
+	public function deactivateUser($request, $response, $args)
+	{
+		$uuid = $args['uuid'];
+		$data = $request->getParsedBody();
+		$user = \Nucleus\Models\User::find($uuid);
+
+		$user->active = false;
+
+		$this->loggers['debug.log']->debug("Deactivate user:", $user->toArray());
+
+		$user->save();
+
+		return $response->getBody()->write($user->toJson());
+	}
+
+	public function activateUser($request, $response, $args)
+	{
+		$uuid = $args['uuid'];
+		$data = $request->getParsedBody();
+		$user = \Nucleus\Models\User::find($uuid);
+
+		$user->active = true;
+
+		$this->loggers['debug.log']->debug("Activate user:", $user->toArray());
 
 		$user->save();
 

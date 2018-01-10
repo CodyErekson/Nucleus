@@ -47,7 +47,7 @@ $container['uuid'] = function ($c) {
 		$uuid5 = Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, $name);
 		return $uuid5->toString();
 	};*/
-	return Ramsey\Uuid\Uuid::uuid4()->toString();
+	return Ramsey\Uuid\Uuid::uuid4(); //->toString();
 };
 
 // Helper Classes

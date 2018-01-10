@@ -9,7 +9,10 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 	"secure" => false,
 	"path" => ["/api/", "/test/"],
 	"passthrough" => ["/api/user/login/"],
-	"relaxed" => ["localhost", "nucleus.local"]
+	"relaxed" => ["localhost", "nucleus.local"],
+	"callback" => function ($request, $response, $arguments) use ($container) {
+		$container["token"] = $arguments["decoded"];
+	}
 ]));
 
 // A middleware for enabling CORS

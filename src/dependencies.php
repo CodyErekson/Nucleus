@@ -46,6 +46,21 @@ $container['uuid'] = function ($c) {
 	return Ramsey\Uuid\Uuid::uuid4();
 };
 
+$container['phpErrorHandler'] = $container['errorHandler'] = function ($container) {
+	$logger = $container['error.log'];
+	$whoopsHandler = new Dopesong\Slim\Error\Whoops();
+
+	$whoopsHandler->pushHandler(
+		function ($exception) use ($logger) {
+			/** @var \Exception $exception */
+			$logger->error($exception->getMessage(), ['exception' => $exception]);
+			return Whoops\Handler\Handler::DONE;
+		}
+	);
+
+	return $whoopsHandler;
+};
+
 // Helper Classes
 $container['token_manager'] = function ($c) {
 	return new Nucleus\Helpers\TokenManager($c['debug.log']);

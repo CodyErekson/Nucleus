@@ -81,21 +81,11 @@ $container['user_manager'] = function ($c) {
 
 // Controller Classes
 $container['HomeController'] = function($c) {
-	$hc = new Nucleus\Controllers\HomeController($c->get("view"));
-	$logs = explode(",", getenv('LOGS'));
-	foreach($logs as $log) {
-		$log_name = $log . ".log";
-		$hc->addLogger($c[$log_name], $log_name);
-	}
+	$hc = new Nucleus\Controllers\HomeController($c);
 	return $hc;
 };
 
 $container['UserController'] = function($c) {
-	$hc = new Nucleus\Controllers\UserController($c->get("renderer"), $c->user_manager, $c->token_manager, $c->jwt, $c->uuid);
-	$logs = explode(",", getenv('LOGS'));
-	foreach($logs as $log) {
-		$log_name = $log . ".log";
-		$hc->addLogger($c[$log_name], $log_name);
-	}
+	$hc = new Nucleus\Controllers\UserController($c);
 	return $hc;
 };

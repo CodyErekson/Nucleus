@@ -3,10 +3,18 @@
 
 $container = $app->getContainer();
 
-// view renderer
-$container['renderer'] = function ($c) {
+// Register component on container
+$container['view'] = function ($c) {
 	$env = $c->get('settings')['env'];
-	return new Slim\Views\PhpRenderer(realpath($env['env_path'] . getenv('TEMPLATE_ROOT') . '/'));
+	$view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates'), [
+		//'cache' => realpath($env['env_path'] . '/src/View/cache')
+	]);
+
+	// Instantiate and add Slim specific extension
+	$basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
+	$view->addExtension(new Slim\Views\TwigExtension($c['router'], $basePath));
+
+	return $view;
 };
 
 // monolog -- build multiple log handlers based upon $LOGS
@@ -73,7 +81,7 @@ $container['user_manager'] = function ($c) {
 
 // Controller Classes
 $container['HomeController'] = function($c) {
-	$hc = new Nucleus\Controllers\HomeController($c->get("renderer"));
+	$hc = new Nucleus\Controllers\HomeController($c->get("view"));
 	$logs = explode(",", getenv('LOGS'));
 	foreach($logs as $log) {
 		$log_name = $log . ".log";

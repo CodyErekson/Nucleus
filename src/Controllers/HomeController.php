@@ -4,12 +4,12 @@ namespace Nucleus\Controllers;
 
 class HomeController
 {
-	protected $renderer;
+	protected $view;
 	protected $loggers = [];
 
-	public function __construct(\Slim\Views\PhpRenderer $renderer)
+	public function __construct(\Slim\Views\Twig $view)
 	{
-		$this->renderer = $renderer;
+		$this->view = $view;
 	}
 
 	public function addLogger($logger, $name)
@@ -20,6 +20,6 @@ class HomeController
 	public function home($request, $response, $args)
 	{
 		$this->loggers['debug.log']->debug("here");
-		return $this->renderer->render($response, 'index.phtml', $args);
+		return $this->view->render($response, 'index.html', $args);
 	}
 }

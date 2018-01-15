@@ -1,6 +1,7 @@
 <?php
 use Slim\App;
 use \Firebase\JWT\JWT;
+use \dBug\dBug;
 
 if (PHP_SAPI == 'cli-server') {
 	// To help the built-in PHP dev server, check if the request was actually for

@@ -4,7 +4,7 @@
  */
 
 
-if (!function_exists('d')) {
+if ( !function_exists('d' )) {
 	/**
 	 * Dump the passed variables
 	 *
@@ -19,7 +19,7 @@ if (!function_exists('d')) {
 	}
 }
 
-if (!function_exists('dd')) {
+if ( !function_exists('dd' )) {
 	/**
 	 * Dump the passed variables and die
 	 *
@@ -35,5 +35,14 @@ if (!function_exists('dd')) {
 			}
 		}
 		die();
+	}
+}
+
+if ( !function_exists('ddd') ){
+	function ddd(... $args)
+	{
+		foreach ($args as $x) {
+			new \dBug\dBug($x);
+		}
 	}
 }

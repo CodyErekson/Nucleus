@@ -33,6 +33,7 @@ class InitialMigration extends AbstractMigration
 			->addColumn('username', 'string')
 			->addColumn('email', 'string')
 			->addColumn('password', 'string')
+			->addColumn('role', 'string')
 			->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
 			->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
 			->addColumn('active', 'boolean', ['default' => 1])

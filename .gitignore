@@ -16,7 +16,6 @@ composer.lock
 logs/**.log
 phinx.yml
 phpunit.xml
-db/migrations/20180103002723_my_first_migration.php
 
 
 # Compiled source #

@@ -8,11 +8,14 @@ $container['view'] = function ($c) {
 	$env = $c->get('settings')['env'];
 	$view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates'), [
 		//'cache' => realpath($env['env_path'] . '/src/View/cache')
+		//'debug' => true
 	]);
 
 	// Instantiate and add Slim specific extension
 	$basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
 	$view->addExtension(new Slim\Views\TwigExtension($c['router'], $basePath));
+	//$view->addExtension(new \Twig_Extension_Debug);
+	$view->addExtension(new Nucleus\View\DebugExtension);
 
 	return $view;
 };

@@ -24,10 +24,6 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 ]));
 
 // A middleware for enabling CORS
-$app->add(function ($req, $res, $next) {
-	$response = $next($req, $res);
-	return $response
-		->withHeader('Access-Control-Allow-Origin', '*')
-		->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-		->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-});
+$app->add(new \Nucleus\Middleware\CorsMiddleware($container));
+
+$app->add(new \Nucleus\Middleware\AuthMiddleware($container));

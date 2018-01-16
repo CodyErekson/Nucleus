@@ -23,6 +23,7 @@ class UserSeeder extends AbstractSeed
 				'username' => 'Cody',
 				'email' => 'cody@erekson.org',
 				'password' => password_hash('iamcody', PASSWORD_BCRYPT), //iamcody
+				'role' => 'admin',
 				'created_at' => date('Y-m-d H:i:s'),
 			],
 			[
@@ -30,6 +31,7 @@ class UserSeeder extends AbstractSeed
 				'username' => 'Bob',
 				'email' => 'bob@gmail.com',
 				'password' => password_hash('iambob', PASSWORD_BCRYPT), //iambob
+				'role' => 'member',
 				'created_at' => date('Y-m-d H:i:s'),
 			],
 			[

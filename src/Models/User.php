@@ -8,4 +8,12 @@ class User extends Model {
 	protected $table = 'users';
 	protected $primaryKey = 'uuid';
 	public $incrementing = false;
+
+	protected $fillable = [
+		'username',
+		'email',
+		'password',
+		'role',
+		'active'
+	];
 }

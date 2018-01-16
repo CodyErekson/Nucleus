@@ -13,7 +13,7 @@ $container['view'] = function ($c) {
 
 	// Instantiate and add Slim specific extension
 	$basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
-	$view->addExtension(new Slim\Views\TwigExtension($c['router'], $basePath));
+	$view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
 	//$view->addExtension(new \Twig_Extension_Debug);
 	$view->addExtension(new Nucleus\View\DebugExtension);
 
@@ -48,6 +48,10 @@ $container['db'] = function ($c) {
 };
 
 $container->get('db');
+
+$container['validator'] = function ($c) {
+	return new \Nucleus\Helpers\Validator();
+};
 
 $container['jwt'] = function ($c) {
 	return new Firebase\JWT\JWT();
@@ -84,11 +88,16 @@ $container['user_manager'] = function ($c) {
 
 // Controller Classes
 $container['HomeController'] = function($c) {
-	$hc = new Nucleus\Controllers\HomeController($c);
-	return $hc;
+	$controller = new Nucleus\Controllers\HomeController($c);
+	return $controller;
 };
 
 $container['UserController'] = function($c) {
-	$hc = new Nucleus\Controllers\UserController($c);
-	return $hc;
+	$controller = new Nucleus\Controllers\UserController($c);
+	return $controller;
+};
+
+$container['AuthController'] = function($c) {
+	$controller = new Nucleus\Controllers\Auth\AuthController($c);
+	return $controller;
 };

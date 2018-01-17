@@ -68,7 +68,12 @@ $container['db'] = function ($c) {
 $container->get('db');
 
 $container['csrf'] = function () {
-	return new \Slim\Csrf\Guard();
+	$guard = new \Slim\Csrf\Guard();
+	$guard->setFailureCallable(function ($request, $response, $next) {
+		$request = $request->withAttribute("csrf_status", false);
+		return $next($request, $response);
+	});
+	return $guard;
 };
 
 $container['validator'] = function () {

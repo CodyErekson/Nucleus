@@ -34,5 +34,7 @@ $app->add(new \Nucleus\Middleware\PersistMiddleware($container));
 
 $app->add(new \Nucleus\Middleware\CsrfMiddleware($container));
 
+$app->add(new \Nucleus\Middleware\CsrfCheckMiddleware($container));
+
 $app->add($container->csrf);
 

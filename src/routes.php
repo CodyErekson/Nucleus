@@ -7,6 +7,7 @@ use Slim\Http\Request as Request;
 use Slim\Http\Response as Response;
 use Nucleus\Middleware\AuthMiddleware;
 use Nucleus\Middleware\GuestMiddleware;
+use Nucleus\Middleware\AdminMiddleware;
 
 // Just a simple testing route
 

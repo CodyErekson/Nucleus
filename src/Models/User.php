@@ -16,4 +16,18 @@ class User extends Model {
 		'role',
 		'active'
 	];
+
+	public function setPassword($password)
+	{
+		$this->update([
+			'password' => password_hash($password, PASSWORD_BCRYPT)
+		]);
+	}
+
+	public function setActive($state = false)
+	{
+		$this->update([
+			'active' => $state
+		]);
+	}
 }

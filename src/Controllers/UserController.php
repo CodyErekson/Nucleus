@@ -2,6 +2,10 @@
 
 namespace Nucleus\Controllers;
 
+use Nucleus\Controllers\BaseController;
+use Nucleus\Models\User;
+use Respect\Validation\Validator as v;
+
 class UserController extends BaseController
 {
 
@@ -230,7 +234,7 @@ class UserController extends BaseController
 		$data = $request->getParsedBody();
 		$user = \Nucleus\Models\User::find($uuid);
 
-		$user->active = false;
+		$user->setActive(false);
 
 		$this->container['debug.log']->debug("Deactivate user:", $user->toArray());
 
@@ -245,7 +249,7 @@ class UserController extends BaseController
 		$data = $request->getParsedBody();
 		$user = \Nucleus\Models\User::find($uuid);
 
-		$user->active = true;
+		$user->setActive(true);
 
 		$this->container['debug.log']->debug("Activate user:", $user->toArray());
 

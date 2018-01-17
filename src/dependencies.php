@@ -1,7 +1,18 @@
 <?php
 // DIC configuration
 
+use Respect\Validation\Validator as v;
+
 $container = $app->getContainer();
+
+// Start with authentication
+$container['auth'] = function () {
+	return new \Nucleus\Helpers\Auth();
+};
+
+$container['flash'] = function () {
+	return new \Slim\Flash\Messages();
+};
 
 // Register component on container
 $container['view'] = function ($c) {
@@ -16,6 +27,13 @@ $container['view'] = function ($c) {
 	$view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
 	//$view->addExtension(new \Twig_Extension_Debug);
 	$view->addExtension(new Nucleus\View\DebugExtension);
+
+	$view->getEnvironment()->addGlobal('auth', [
+		'check' => $c->auth->check(),
+		'user' => $c->auth->user()
+	]);
+
+	$view->getEnvironment()->addGlobal('flash', $c->flash);
 
 	return $view;
 };
@@ -49,15 +67,19 @@ $container['db'] = function ($c) {
 
 $container->get('db');
 
-$container['validator'] = function ($c) {
+$container['csrf'] = function () {
+	return new \Slim\Csrf\Guard();
+};
+
+$container['validator'] = function () {
 	return new \Nucleus\Helpers\Validator();
 };
 
-$container['jwt'] = function ($c) {
+$container['jwt'] = function () {
 	return new Firebase\JWT\JWT();
 };
 
-$container['uuid'] = function ($c) {
+$container['uuid'] = function () {
 	return Ramsey\Uuid\Uuid::uuid4();
 };
 
@@ -78,26 +100,27 @@ $container['phpErrorHandler'] = $container['errorHandler'] = function ($containe
 
 // Helper Classes
 $container['token_manager'] = function ($c) {
-	return new Nucleus\Helpers\TokenManager($c['debug.log']);
+	return new \Nucleus\Helpers\TokenManager($c['debug.log']);
 };
 
 $container['user_manager'] = function ($c) {
-	return new Nucleus\Helpers\UserManager($c['debug.log']);
+	return new \Nucleus\Helpers\UserManager($c['debug.log']);
 };
 
+v::with('Nucleus\\Helpers\\Rules\\');
 
 // Controller Classes
 $container['HomeController'] = function($c) {
-	$controller = new Nucleus\Controllers\HomeController($c);
+	$controller = new \Nucleus\Controllers\HomeController($c);
 	return $controller;
 };
 
 $container['UserController'] = function($c) {
-	$controller = new Nucleus\Controllers\UserController($c);
+	$controller = new \Nucleus\Controllers\UserController($c);
 	return $controller;
 };
 
 $container['AuthController'] = function($c) {
-	$controller = new Nucleus\Controllers\Auth\AuthController($c);
+	$controller = new \Nucleus\Controllers\AuthController($c);
 	return $controller;
 };

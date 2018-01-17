@@ -5,6 +5,8 @@
 //use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Http\Request as Request;
 use Slim\Http\Response as Response;
+use Nucleus\Middleware\AuthMiddleware;
+use Nucleus\Middleware\GuestMiddleware;
 
 // Just a simple testing route
 
@@ -16,9 +18,42 @@ $app->get('/test/', function($request, $response) {
 });
 
 // Auth
-$app->get('/auth/signup', 'AuthController:getSignUp')->setName('auth.signup');
+$app->group('', function () {
 
-$app->post('/auth/signup', 'AuthController:postSignUp');
+	$this->get('/auth/signup', 'AuthController:getSignUp')->setName('auth.signup');
+
+	$this->post('/auth/signup', 'AuthController:postSignUp');
+
+	$this->get('/auth/login', 'AuthController:getLogin')->setName('auth.login');
+
+	$this->post('/auth/login', 'AuthController:postLogin');
+
+})->add(new GuestMiddleware($container));
+
+$app->group('', function () {
+
+	$this->get('/auth/logout', 'AuthController:getLogout')->setName('auth.logout');
+
+	$this->get('/auth/password/change', 'AuthController:getPasswordChange')->setName('auth.password.change');
+
+	$this->post('/auth/password/change', 'AuthController:postPasswordChange');
+
+})->add(new AuthMiddleware($container));
+
+$app->group('', function () {
+
+	$this->post('/api/user/', 'UserController:createUser');
+
+//remember to include header X-Http-Method-Override:PUT, actually use POST
+	$this->put('/api/user/{uuid}', 'UserController:updateUser');
+
+	$this->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
+
+	$this->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
+
+	$this->delete('/api/user/{uuid}', 'UserController:deleteUser');
+
+})->add(new AdminMiddleware($container));
 
 // Authenticate route.
 $app->post('/api/user/login/', 'UserController:login');
@@ -29,13 +64,4 @@ $app->get('/api/user/', 'UserController:getUsers');
 
 $app->get('/api/user/{uuid}', 'UserController:getUser');
 
-$app->post('/api/user/', 'UserController:createUser');
 
-//remember to include header X-Http-Method-Override:PUT, actually use POST
-$app->put('/api/user/{uuid}', 'UserController:updateUser');
-
-$app->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
-
-$app->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
-
-$app->delete('/api/user/{uuid}', 'UserController:deleteUser');

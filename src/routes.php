@@ -17,7 +17,7 @@ $app->get('/test/', function($request, $response) {
 	return $response->getBody()->write($users->toJson());
 });
 
-// Auth
+// Guest routes
 $app->group('', function () {
 
 	$this->get('/auth/signup', 'AuthController:getSignUp')->setName('auth.signup');
@@ -30,6 +30,7 @@ $app->group('', function () {
 
 })->add(new GuestMiddleware($container));
 
+// User routes
 $app->group('', function () {
 
 	$this->get('/auth/logout', 'AuthController:getLogout')->setName('auth.logout');
@@ -40,11 +41,12 @@ $app->group('', function () {
 
 })->add(new AuthMiddleware($container));
 
+// Admin routes
 $app->group('', function () {
 
 	$this->post('/api/user/', 'UserController:createUser');
 
-//remember to include header X-Http-Method-Override:PUT, actually use POST
+	//remember to include header X-Http-Method-Override:PUT, actually use POST
 	$this->put('/api/user/{uuid}', 'UserController:updateUser');
 
 	$this->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');

@@ -26,4 +26,13 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 // A middleware for enabling CORS
 $app->add(new \Nucleus\Middleware\CorsMiddleware($container));
 
-$app->add(new \Nucleus\Middleware\AuthMiddleware($container));
+//$app->add(new \Nucleus\Middleware\AuthMiddleware($container));
+
+$app->add(new \Nucleus\Middleware\ValidationMiddleware($container));
+
+$app->add(new \Nucleus\Middleware\PersistMiddleware($container));
+
+$app->add(new \Nucleus\Middleware\CsrfMiddleware($container));
+
+$app->add($container->csrf);
+

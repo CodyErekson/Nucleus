@@ -2,7 +2,7 @@
 
 namespace Nucleus\Middleware;
 
-class CorsMiddleware extends Middleware
+class CorsMiddleware extends BaseMiddleware
 {
 
 	public function __invoke($request, $response, $next)

@@ -2,7 +2,7 @@
 
 namespace Nucleus\Middleware;
 
-class Middleware
+class BaseMiddleware
 {
 	protected $container;
 

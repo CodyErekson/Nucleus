@@ -5,10 +5,11 @@
 
 // JSON Web Token
 $app->add(new \Slim\Middleware\JwtAuthentication([
-	"secret" => getenv("JWT_SECRET"),
+	"secret" => base64_encode(getenv('JWT_SECRET')),
 	"secure" => false,
 	"path" => ["/api/", "/test/"],
 	"passthrough" => ["/api/user/login/"],
+	"algorithm" => 'HS256',
 	"relaxed" => ["localhost", "nucleus.local"],
 	"callback" => function ($request, $response, $arguments) use ($container) {
 		$container['token'] = $arguments["decoded"];
@@ -26,15 +27,10 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 // A middleware for enabling CORS
 $app->add(new \Nucleus\Middleware\CorsMiddleware($container));
 
-//$app->add(new \Nucleus\Middleware\AuthMiddleware($container));
-
 $app->add(new \Nucleus\Middleware\ValidationMiddleware($container));
 
 $app->add(new \Nucleus\Middleware\PersistMiddleware($container));
 
 $app->add(new \Nucleus\Middleware\CsrfMiddleware($container));
 
-$app->add(new \Nucleus\Middleware\CsrfCheckMiddleware($container));
-
 $app->add($container->csrf);
-

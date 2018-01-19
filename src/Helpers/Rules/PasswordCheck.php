@@ -8,15 +8,25 @@ use Respect\Validation\Rules\AbstractRule;
 class PasswordCheck extends AbstractRule
 {
 
-	public function validate($password)
+	protected $username;
+	protected $uuid;
+
+	public function __construct($username=null, $uuid=null)
 	{
-		if ( !isset($_SESSION['uuid']) ){
-			return false;
+		$this->username = $username;
+		$this->uuid = $uuid;
+	}
+
+	public function validate($input)
+	{
+		if ( !is_null($this->uuid) ) {
+			$user = User::where('uuid', $this->uuid)->first();
+		} else {
+			$user = User::where('username', $this->username)->first();
 		}
-		$user = User::where('uuid', $_SESSION['uuid']);
-		if ( password_verify($password, $user->password) ){
+		if ( password_verify($input, $user->password) ){
 			return true;
 		}
-
+		return false;
 	}
 }

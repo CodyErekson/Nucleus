@@ -5,9 +5,13 @@ use Respect\Validation\Validator as v;
 
 $container = $app->getContainer();
 
-// Start with authentication
-$container['auth'] = function () {
-	return new \Nucleus\Helpers\Auth();
+// Helper Classes
+$container['token_manager'] = function ($c) {
+	return new \Nucleus\Helpers\TokenManager($c['debug.log']);
+};
+
+$container['user_manager'] = function ($c) {
+	return new \Nucleus\Helpers\UserManager($c);
 };
 
 $container['flash'] = function () {
@@ -29,8 +33,8 @@ $container['view'] = function ($c) {
 	$view->addExtension(new Nucleus\View\DebugExtension);
 
 	$view->getEnvironment()->addGlobal('auth', [
-		'check' => $c->auth->check(),
-		'user' => $c->auth->user()
+		'check' => $c->user_manager->check(),
+		'user' => $c->user_manager->currentUser()
 	]);
 
 	$view->getEnvironment()->addGlobal('flash', $c->flash);
@@ -76,8 +80,8 @@ $container['csrf'] = function () {
 	return $guard;
 };
 
-$container['validator'] = function () {
-	return new \Nucleus\Helpers\Validator();
+$container['validator'] = function ($c) {
+	return new \Nucleus\Helpers\Validator($c);
 };
 
 $container['jwt'] = function () {
@@ -86,6 +90,7 @@ $container['jwt'] = function () {
 
 $container['uuid'] = function () {
 	return Ramsey\Uuid\Uuid::uuid4();
+	//return Ramsey\Uuid\Uuid;
 };
 
 $container['phpErrorHandler'] = $container['errorHandler'] = function ($container) {
@@ -103,15 +108,7 @@ $container['phpErrorHandler'] = $container['errorHandler'] = function ($containe
 	return $whoopsHandler;
 };
 
-// Helper Classes
-$container['token_manager'] = function ($c) {
-	return new \Nucleus\Helpers\TokenManager($c['debug.log']);
-};
-
-$container['user_manager'] = function ($c) {
-	return new \Nucleus\Helpers\UserManager($c['debug.log']);
-};
-
+// Validation rules
 v::with('Nucleus\\Helpers\\Rules\\');
 
 // Controller Classes

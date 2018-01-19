@@ -1,2 +1,14 @@
+Dependencies:
+
 ACL -- http://danielkalbasi.com/token-and-role-based-authentication-in-slim-3/   https://github.com/geggleto/geggleto-acl
 CLI utility
+
+
+Schema:
+
+
+
+Functionality:
+
+Create, refresh, and destroy token methods
+Implement new global template

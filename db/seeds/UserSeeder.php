@@ -14,36 +14,34 @@ class UserSeeder extends AbstractSeed
      * http://docs.phinx.org/en/latest/seeding.html
      */
     public function run()
-    {
+	{
 
-		// Insert some initial data
+		// Create some users
 		$users = [
 			[
-				'uuid' => Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, 'Cody')->toString(),
+				'uuid' => Ramsey\Uuid\Uuid::uuid4()->toString(),
 				'username' => 'Cody',
 				'email' => 'cody@erekson.org',
-				'password' => password_hash('iamcody', PASSWORD_BCRYPT), //iamcody
-				'role' => 'admin',
+				'password' => password_hash('yesiamcody', PASSWORD_BCRYPT), //iamcody
 				'created_at' => date('Y-m-d H:i:s'),
 			],
 			[
-				'uuid' => Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, 'Bob')->toString(),
-				'username' => 'Bob',
+				'uuid' => Ramsey\Uuid\Uuid::uuid4()->toString(),
+				'username' => 'Bobby',
 				'email' => 'bob@gmail.com',
-				'password' => password_hash('iambob', PASSWORD_BCRYPT), //iambob
-				'role' => 'member',
+				'password' => password_hash('yesiambobby', PASSWORD_BCRYPT), //iambob
 				'created_at' => date('Y-m-d H:i:s'),
 			],
 			[
-				'uuid' => Ramsey\Uuid\Uuid::uuid5(Ramsey\Uuid\Uuid::NAMESPACE_DNS, 'Jim')->toString(),
-				'username' => 'Jim',
+				'uuid' => Ramsey\Uuid\Uuid::uuid4()->toString(),
+				'username' => 'Jimmy',
 				'email' => 'jim@yahoo.com',
-				'password' => password_hash('iamjim', PASSWORD_BCRYPT), //iamjim
+				'password' => password_hash('yesiamjimmy', PASSWORD_BCRYPT), //iamjim
 				'created_at' => date('Y-m-d H:i:s'),
 			]
 		];
 		$table = $this->table('users');
 		$table->insert($users)
 			->save();
-    }
+	}
 }

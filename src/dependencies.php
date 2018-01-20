@@ -22,7 +22,9 @@ $container['flash'] = function () {
 $container['view'] = function ($c) {
 	$env = $c->get('settings')['env'];
 	$view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates'), [
-		//'cache' => realpath($env['env_path'] . '/src/View/cache')
+		//'cache' => realpath($env['env_path'] . '/src/View/cache'),
+		'auto_reload' => ( getenv('ENV') == 'development' ? true : false ),
+		'strict_variables' => ( getenv('ENV') == 'development' ? false : true ),
 		//'debug' => true
 	]);
 
@@ -31,6 +33,11 @@ $container['view'] = function ($c) {
 	$view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
 	//$view->addExtension(new \Twig_Extension_Debug);
 	$view->addExtension(new Nucleus\View\DebugExtension);
+
+	$view->getEnvironment()->addGlobal('env', getenv('ENV'));
+	$view->getEnvironment()->addGlobal('name', getenv('NAME'));
+	$view->getEnvironment()->addGlobal('base_url', getenv('BASE_URL'));
+	$view->getEnvironment()->addGlobal('domain', getenv('DOMAIN'));
 
 	$view->getEnvironment()->addGlobal('auth', [
 		'check' => $c->user_manager->check(),

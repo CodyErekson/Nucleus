@@ -114,7 +114,7 @@ class UserController extends BaseController
 			return $res;
 		}
 
-		$user = $this->container->user_manager->updateUser($uuid, $data);
+		$user = $this->container->user_manager->updateUser($data, $uuid);
 
 		return $response->getBody()->write($user->toJson());
 	}

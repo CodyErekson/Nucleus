@@ -8,3 +8,15 @@ Schema:
 
 
 Functionality:
+
+
+
+Documentation:
+		PHPDoc
+		Swagger API doc
+		README
+
+
+Testing:
+	Unit tests
+	Acceptance tests

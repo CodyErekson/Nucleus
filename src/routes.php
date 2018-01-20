@@ -15,7 +15,7 @@ use \Nucleus\Middleware\CsrfCheckMiddleware;
 $app->get('/[{name}]', 'HomeController:home')->setName('home');
 
 $app->get('/test/', function($request, $response) {
-	$data = $request->getParsedBody();
+	/*$data = $request->getParsedBody();
 	$user = \Nucleus\Models\User::where('username', '=', $data['username']);
 	var_dump($user->exists());
 	die();
@@ -26,7 +26,9 @@ $app->get('/test/', function($request, $response) {
 	}
 	die();
 	$users = \Nucleus\Models\User::all();
-	return $response->getBody()->write($users->toJson());
+	return $response->getBody()->write($users->toJson());*/
+	$args = [];
+	return $this->view->render($response, 'test_page.twig', $args);
 });
 
 /**

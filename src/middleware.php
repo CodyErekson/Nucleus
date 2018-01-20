@@ -7,7 +7,7 @@
 $app->add(new \Slim\Middleware\JwtAuthentication([
 	"secret" => base64_encode(getenv('JWT_SECRET')),
 	"secure" => false,
-	"path" => ["/api/", "/test/"],
+	"path" => ["/api/"],
 	"passthrough" => ["/api/user/login/"],
 	"algorithm" => 'HS256',
 	"relaxed" => ["localhost", "nucleus.local"],

@@ -22,7 +22,7 @@ class HomeController extends BaseController
 		//$user = User::where('uuid', 'd7af33a6-77a0-56a3-8f2e-f14fc9049c17')->first();
 		$user = User::where('username', 'Bobby')->first();
 		$user->setContainer($this->container);
-		ddd($user->getToken()->token);
+		///ddd($user->getToken()->token);
 
 		//$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nhello " . print_r($args, true));
 		return $this->container->view->render($response, 'home.twig', $args);

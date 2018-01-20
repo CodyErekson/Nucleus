@@ -1,0 +1,46 @@
+{% extends "skeleton/page.twig" %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Edit Profile</div>
+                    <div class="panel-body">
+
+                        <form action="{{ path_for('auth.user.update') }}" method="post">
+                            <div class="col-md-6">
+                                <div class="form-group{{ errors.username ? ' has-error' : '' }}">
+                                    <label for="username">Username</label>
+                                    <input type="text" name="username" id="username" class="form-control border-input" placeholder="Username" value="{{ user.username ? user.username : '' }}">
+                                    {% if errors.username %}
+                                        <span class="help-block">{{ errors.username | first }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group{{ errors.email ? ' has-error' : '' }}">
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" id="email" class="form-control border-input" placeholder="you@domain.com" value="{{ user.email ? user.email : '' }}">
+                                    {% if errors.email %}
+                                        <span class="help-block">{{ errors.email | first }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-info btn-fill btn-wd">Save</button>
+                            </div>
+                            <div class="clearfix"></div>
+                            {{  csrf.field | raw }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

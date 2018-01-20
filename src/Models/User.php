@@ -19,6 +19,10 @@ class User extends Model {
 		'active'
 	];
 
+	protected $hidden = [
+		'password'
+	];
+
 	// Relationships
 	public function token()
 	{

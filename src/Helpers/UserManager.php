@@ -75,11 +75,6 @@ class UserManager {
 		$validation = $this->container->validator->validate($request, [
 			'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
 			'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
-			'current' => v::notEmpty()->length(8)->noWhitespace()
-				->passwordCheck(false, $_SESSION['uuid']),
-			'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
-			'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
-				->confirmPassword($request->getParam('password')),
 		]);
 
 		if ( $validation->failed()) {
@@ -104,7 +99,7 @@ class UserManager {
 		return true;
 	}
 
-	public function updateUser($uuid, $data)
+	public function updateUser($data, $uuid)
 	{
 		$user = \Nucleus\Models\User::find($uuid);
 

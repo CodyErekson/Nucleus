@@ -67,17 +67,33 @@ class AuthController extends BaseController
 
 	public function getUpdateUser($request, $response)
 	{
-
+		return $this->container->view->render($response, 'update_profile.twig');
 	}
 
 	public function postUpdateUser($request, $response)
 	{
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUpdate user payload:", $request->getParsedBody());
 
+		$user = $this->container->user_manager->currentUser();
+		if ( !$this->container->user_manager->updateUserValidation($request, $user->uuid) ){
+			return $response->withRedirect($this->container->router->pathFor('auth.user.update'));
+		}
+
+		try {
+			$user = $this->container->user_manager->updateUser($request->getParsedBody(), $user->uuid);
+			$this->container->user_manager->login($user->uuid);
+		} catch ( \Illuminate\Database\QueryException $e ){
+			return $response->withRedirect($this->container->router->pathFor('auth.user.update'));
+		}
+
+		$this->container->flash->addMessage('success', 'Your account has been successfully modified.');
+
+		return $response->withRedirect($this->container->router->pathFor('auth.user.update'));
 	}
 
 	public function getPasswordChange($request, $response)
 	{
-		return $this->container->view->render($response, 'auth/password.html.twig');
+		return $this->container->view->render($response, 'change_password.twig');
 	}
 
 	public function postPasswordChange($request, $response)

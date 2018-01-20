@@ -24,6 +24,9 @@ class PasswordCheck extends AbstractRule
 		} else {
 			$user = User::where('username', $this->username)->first();
 		}
+		if ( !$user ){
+			return false;
+		}
 		if ( password_verify($input, $user->password) ){
 			return true;
 		}

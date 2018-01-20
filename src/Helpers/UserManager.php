@@ -63,7 +63,7 @@ class UserManager {
 			'password' => password_hash($request->getParam('password'),PASSWORD_BCRYPT)
 		]);
 
-		$this->container['debug.log']->debug("New user: ", $user->toArray());
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nNew user: ", $user->toArray());
 
 		$role = \Nucleus\Models\Role::find('2');
 		$user->roles()->save($role);
@@ -133,7 +133,7 @@ class UserManager {
 	{
 		$validation = $this->container->validator->validate($request, [
 			'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()
-				->usernameExists($request->getParam('username')),
+				->usernameExists(),
 			'password' => v::notEmpty()->length(8)->noWhitespace()->stringType()
 				->passwordCheck($request->getParam('username')),
 		]);

@@ -8,7 +8,7 @@ class AdminMiddleware extends BaseMiddleware
 	public function __invoke($request, $response, $next)
 	{
 		$roles = $this->container->user_manager->currentUser()->getRoles();
-		$this->container['debug.log']->debug("Roles", $roles);
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nRoles", $roles);
 		if ( in_array("admin", $roles) ){
 			$this->container->flash->addMessage('error', 'This page is only available to administrators.');
 			$res = $response->withHeader("Content-Type", "application/json");

@@ -11,12 +11,12 @@ class AuthController extends BaseController
 
 	public function getSignUp($request, $response)
 	{
-		return $this->container->view->render($response, 'auth/signup.html.twig');
+		return $this->container->view->render($response, 'signup.twig');
 	}
 
 	public function postSignUp($request, $response)
 	{
-		$this->container['debug.log']->debug("Create user payload:", $request->getParsedBody());
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nCreate user payload:", $request->getParsedBody());
 
 		if ( !$this->container->user_manager->createUserValidation($request) ){
 			return $response->withRedirect($this->container->router->pathFor('auth.signup'));
@@ -36,22 +36,22 @@ class AuthController extends BaseController
 
 	public function getLogin($request, $response)
 	{
-		return $this->container->view->render($response, 'auth/login.html.twig');
+		return $this->container->view->render($response, 'login.twig');
 	}
 
 	public function postLogin($request, $response)
 	{
-		$this->container['debug.log']->debug("Login payload:", $request->getParsedBody());
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nLogin payload:", $request->getParsedBody());
 
 		if ( !$this->container->user_manager->loginValidation($request) ){
 			return $response->withRedirect($this->container->router->pathFor('auth.login'));
 		}
 
 		try {
-			$user = \Nucleus\Models\User::where('username', '=', $request->getParam('username'));
+			$user = \Nucleus\Models\User::where('username', $request->getParam('username'))->where('active', true)->first();
 			$this->container->user_manager->login($user->uuid);
 		} catch ( \Exception $e ){
-			$this->container['error.log']->debug("error", $e->getMessage());
+			$this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
 			return $response->withRedirect($this->container->router->pathFor('auth.login'));
 		}
 

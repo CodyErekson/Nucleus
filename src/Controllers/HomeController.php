@@ -12,6 +12,9 @@ class HomeController extends BaseController
 {
 	public function home($request, $response, $args)
 	{
+		if ( !$this->container->user_manager->check() ) {
+			return $response->withRedirect($this->container->router->pathFor('auth.login'));
+		}
 		/*$roles = Role::where('id', '3')->first();
 		foreach($roles->users as $role){
 			ddd($role->username);
@@ -21,7 +24,7 @@ class HomeController extends BaseController
 		$user->setContainer($this->container);
 		ddd($user->getToken()->token);
 
-		//$this->container['debug.log']->debug("hello " . print_r($args, true));
-		return $this->container->view->render($response, 'index.html.twig', $args);
+		//$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nhello " . print_r($args, true));
+		return $this->container->view->render($response, 'home.twig', $args);
 	}
 }

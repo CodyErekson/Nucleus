@@ -41,11 +41,11 @@ class UserController extends BaseController
 			// Find a corresponding token
 			$this->container['debug.log']->debug('Looking for token:', $user->toArray());
 			if ( !$user->getToken() ){
-				$this->container['debug.log']->debug("Unable to retrieve a token.", ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
+				$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUnable to retrieve a token.", ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
 				$this->container['error.log']->error("Unable to retrieve a token.", ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
 				return $response->withStatus(400);
 			}
-			$this->container['debug.log']->debug("Token: " . $user->token->token);
+			$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nToken: " . $user->token->token);
 			$out = [
 				"token" => $user->token->token,
 				"username" => $user->username
@@ -79,7 +79,7 @@ class UserController extends BaseController
 
 	public function createUser($request, $response, $args)
 	{
-		$this->container['debug.log']->debug("Create user payload:", $request->getParsedBody());
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nCreate user payload:", $request->getParsedBody());
 
 		if ( !$this->container->user_manager->createUserValidation($request) ){
 			$res = $response->withHeader("Content-Type", "application/json");
@@ -102,7 +102,7 @@ class UserController extends BaseController
 
 	public function updateUser($request, $response, $args)
 	{
-		$this->container['debug.log']->debug("Update user payload:", $request->getParsedBody());
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUpdate user payload:", $request->getParsedBody());
 
 		$uuid = $args['uuid'];
 		$data = $request->getParsedBody();
@@ -123,7 +123,7 @@ class UserController extends BaseController
 	{
 		$uuid = $args['uuid'];
 
-		$this->container['debug.log']->debug("Deactivate user:", [$uuid]);
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDeactivate user:", [$uuid]);
 
 		$user = $this->container->user_manager->setActive($uuid, false);
 
@@ -136,7 +136,7 @@ class UserController extends BaseController
 
 		$user = $this->container->user_manager->setActive($uuid, true);
 
-		$this->container['debug.log']->debug("Activate user:", $user->toArray());
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nActivate user:", $user->toArray());
 
 		return $response->getBody()->write($user->toJson());
 	}
@@ -145,7 +145,7 @@ class UserController extends BaseController
 	{
 		$uuid = $args['uuid'];
 
-		$this->container['debug.log']->debug("Delete user:", $uuid);
+		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDelete user:", $uuid);
 
 		if ( $this->container->user_manager->deleteUser($uuid) ){
 			return $response->withStatus(200);

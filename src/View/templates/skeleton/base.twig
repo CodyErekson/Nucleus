@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+<div class="wrapper">
+    {% block sidebar %}{% endblock %}
+
+	<div class="main-panel">
+        {% block navbar %}{% endblock %}
+
+        {% block content %}{% endblock %}
+
+
+        {% block footer %}{% endblock %}
+
+
+	</div>
+</div>
+
+
+</body>
+{% block scripts %}{% endblock %}
+
+</html>

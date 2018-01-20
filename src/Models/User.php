@@ -88,7 +88,7 @@ class User extends Model {
 		$payload = array(
 			"jti"	=> base64_encode(random_bytes(32)),
 			"iat"   => time(),
-			"iss"   => getenv('HOST'),
+			"iss"   => getenv('BASE_URL'),
 			"nbf"	=> time() + 10,
 			"exp"   => time() + (3600 * 24 * 15),
 			"data" => [

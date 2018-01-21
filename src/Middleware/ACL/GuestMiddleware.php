@@ -1,7 +1,14 @@
 <?php
+/**
+ * Control access for routes only available to guests (ie, not logged in users)
+ */
 
 namespace Nucleus\Middleware\ACL;
 
+/**
+ * Class GuestMiddleware
+ * @package Nucleus\Middleware\ACL
+ */
 class GuestMiddleware extends BaseMiddleware
 {
 

@@ -1,7 +1,14 @@
 <?php
+/**
+ * Control access for routes requiring admin role
+ */
 
 namespace Nucleus\Middleware\ACL;
 
+/**
+ * Class AdminMiddleware
+ * @package Nucleus\Middleware\ACL
+ */
 class AdminMiddleware extends BaseMiddleware
 {
 
@@ -15,7 +22,6 @@ class AdminMiddleware extends BaseMiddleware
 			$res = $res->withStatus(401);
 			$res->getBody()->write(json_encode(['error' => 'This page is only available to administrators.']));
 			return $res;
-			//return $response->withRedirect($this->container->router->pathFor('home'));
 		}
 
 		$response = $next($request, $response);

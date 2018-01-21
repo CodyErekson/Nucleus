@@ -1,7 +1,14 @@
 <?php
+/**
+ * Allow Cross Origin Requests
+ */
 
 namespace Nucleus\Middleware;
 
+/**
+ * Class CorsMiddleware
+ * @package Nucleus\Middleware
+ */
 class CorsMiddleware extends BaseMiddleware
 {
 

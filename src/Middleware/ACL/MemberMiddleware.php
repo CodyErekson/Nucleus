@@ -1,7 +1,14 @@
 <?php
+/**
+ * Control access for routes requiring member role
+ */
 
 namespace Nucleus\Middleware\ACL;
 
+/**
+ * Class MemberMiddleware
+ * @package Nucleus\Middleware\ACL
+ */
 class MemberMiddleware extends BaseMiddleware
 {
 

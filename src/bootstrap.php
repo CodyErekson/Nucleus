@@ -21,7 +21,7 @@ require(__DIR__ . '/../src/functions.php');
 // Maybe don't need this if using JWT for entirely stateless API
 session_start();
 
-$env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../'));
+$env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../config'));
 $env->load();
 
 // Instantiate the app

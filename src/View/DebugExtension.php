@@ -1,11 +1,21 @@
 <?php
+/**
+ * Define Twig functions for debugging
+ */
 
 namespace Nucleus\View;
 
+/**
+ * Class DebugExtension
+ * @package Nucleus\View
+ */
 class DebugExtension extends \Twig_Extension
 {
 
-
+	/**
+	 * Define Twig functions
+	 * @return array|\Twig_Function[]
+	 */
 	public function getFunctions()
 	{
 		return [

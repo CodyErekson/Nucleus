@@ -1,4 +1,8 @@
 <?php
+/**
+ * Initialization script
+ */
+
 use Slim\App;
 use \Firebase\JWT\JWT;
 use \dBug\dBug;
@@ -13,29 +17,50 @@ if (PHP_SAPI == 'cli-server') {
 	}
 }
 
+/**
+ * Include dependencies via Composer
+ */
 require(__DIR__ . '/../vendor/autoload.php');
 
-// Get global functions
+/**
+ * Fetch our global functions
+ */
 require(__DIR__ . '/../src/functions.php');
 
-// Maybe don't need this if using JWT for entirely stateless API
+/**
+ * Start a session -- though not used when authenticating with JWT, it is needed for general user authentication
+ */
 session_start();
 
+/**
+ * Get local environment variables
+ */
 $env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../config'));
 $env->load();
 
-// Instantiate the app
+/**
+ * Instantiate Slim framework app
+ */
 $settings = require(__DIR__ . '/../src/settings.php');
 $app = new \Slim\App($settings);
 
-// Set up dependencies
+/**
+ * Set up dependencies
+ */
 require(__DIR__ . '/../src/dependencies.php');
 
-// Register middleware
+/**
+ * Register middleware
+ */
 require(__DIR__ . '/../src/middleware.php');
 
-// Register routes
+/**
+ * Register routes
+ */
 require(__DIR__ . '/../src/routes.php');
 
+/**
+ * Initialize the application
+ */
 $app->run();
 

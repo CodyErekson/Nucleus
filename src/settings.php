@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Slim Framework settings, mostly pulled from config/.env
+ * (No need to edit)
+ */
 return [
 	'settings' => [
 		'displayErrorDetails' => true, // set to false in production
@@ -13,7 +17,7 @@ return [
 
 		// Monolog settings
 		'logger' => [
-			'name' => 'nucleus',
+			'name' => strtolower(getenv('NAME')),
 			'level' => getenv('LOG_LEVEL')
 		],
 

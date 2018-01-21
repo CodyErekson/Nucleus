@@ -1,8 +1,8 @@
 <?php
-// Routes
+/**
+ * Definition of all routes. To be required by bootstrap.php.
+ */
 
-//use Psr\Http\Message\ServerRequestInterface as Request;
-//use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Http\Request as Request;
 use Slim\Http\Response as Response;
 use Nucleus\Middleware\MemberMiddleware;
@@ -83,7 +83,8 @@ $app->group('', function () {
 
 })->add(new AdminMiddleware($container));
 
-// Authenticate route.
+// Authenticate routes
+// TODO -- apply ACL rules
 $app->post('/api/user/login/', 'UserController:login');
 
 $app->post('/api/user/logout/', 'UserController:logout');

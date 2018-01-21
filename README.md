@@ -34,11 +34,14 @@ That command will create a new directory and clone Nucleus into it. Next you nee
 Copy `config/env.dist` to `config/.env` and edit that file with all of your required configuration values.
 
 Next run the initial database migration to create the schema and populate some initial data:
+
 `php vendor/bin/phinx migrate -e development`
 
 If you want to insert the data that I initially use (some users and role associations) run the following:
-`php vendor/bin/phinx seed:run -s UserSeeder
- php vendor/bin/phinx seed:run -s UserRoleSeeder`
+
+`php vendor/bin/phinx seed:run -s UserSeeder`
+
+`php vendor/bin/phinx seed:run -s UserRoleSeeder`
  
 Finally, update `composer.json` to reflect your application's details.
 

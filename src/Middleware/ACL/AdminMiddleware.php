@@ -1,6 +1,6 @@
 <?php
 
-namespace Nucleus\Middleware;
+namespace Nucleus\Middleware\ACL;
 
 class AdminMiddleware extends BaseMiddleware
 {

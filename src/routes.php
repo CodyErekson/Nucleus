@@ -46,7 +46,7 @@ $app->group('', function () {
 
 	$this->post('/auth/login', 'AuthController:postLogin');
 
-})->add(new GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
+})->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
 $app->group('', function () {
@@ -61,7 +61,7 @@ $app->group('', function () {
 
 	$this->post('/auth/user/password', 'AuthController:postPasswordChange');
 
-})->add(new MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
+})->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 /**
  * API routes -- output JSON
@@ -81,7 +81,7 @@ $app->group('', function () {
 
 	$this->delete('/api/user/{uuid}', 'UserController:deleteUser');
 
-})->add(new AdminMiddleware($container));
+})->add(new Nucleus\Middleware\ACL\AdminMiddleware($container));
 
 // Authenticate routes
 // TODO -- apply ACL rules

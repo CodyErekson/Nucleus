@@ -1,7 +1,7 @@
 {
     "name": "chillem/nucleus",
-    "description": "Family management system",
-    "keywords": ["family", "chores", "activities", "manager"],
+    "description": "PHP application scaffold",
+    "keywords": ["PHP", "Slim", "API", "framework", "Twig", "Bootstrap"],
     "license": "MIT",
     "authors": [
         {

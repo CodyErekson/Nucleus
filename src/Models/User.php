@@ -1,10 +1,17 @@
 <?php
+/**
+ * User object
+ */
 
 namespace Nucleus\Models;
 
 use Illuminate\Database\Eloquent\Model as Model;
 use Nucleus\Models\Role;
 
+/**
+ * Class User
+ * @package Nucleus\Models
+ */
 class User extends Model {
 	protected $table = 'users';
 	protected $primaryKey = 'uuid';
@@ -23,23 +30,35 @@ class User extends Model {
 		'password'
 	];
 
-	// Relationships
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
 	public function token()
 	{
 		return $this->hasOne('\Nucleus\Models\Token', 'uuid');
 	}
 
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function roles()
 	{
 		return $this->belongsToMany('\Nucleus\Models\Role', 'role_user');
 	}
 
-	// Set methods
+	/**
+	 * Pass the DIC into user object
+	 * @param \Slim\Container $container
+	 */
 	public function setContainer(\Slim\Container $container)
 	{
 		$this->container = $container;
 	}
 
+	/**
+	 * Define the user's password
+	 * @param $password
+	 */
 	public function setPassword($password)
 	{
 		$this->update([
@@ -47,6 +66,10 @@ class User extends Model {
 		]);
 	}
 
+	/**
+	 * Enable or disable user
+	 * @param bool $state
+	 */
 	public function setActive($state = false)
 	{
 		$this->update([
@@ -54,7 +77,10 @@ class User extends Model {
 		]);
 	}
 
-	// Use methods
+	/**
+	 * Fetch this user's roles
+	 * @return array
+	 */
 	public function getRoles()
 	{
 		$roles = [];
@@ -64,6 +90,10 @@ class User extends Model {
 		return $roles;
 	}
 
+	/**
+	 * Fetch the current token if available and valid, otherwise create and return new token
+	 * @return bool|Token
+	 */
 	public function getToken()
 	{
 		if ( ( is_null($this->token) ) || ( !$this->token->isValid() ) ) {
@@ -86,6 +116,10 @@ class User extends Model {
 		return $this->token;
 	}
 
+	/**
+	 * Create a new JSON Web Token for user
+	 * @return bool|Token
+	 */
 	public function createToken()
 	{
 		$key = base64_encode(getenv('JWT_SECRET'));

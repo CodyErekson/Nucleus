@@ -1,1 +1,1 @@
-[![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg?style=flat-square)](https://github.com/php-pds/skeleton)
+[![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg?style=flat-square)](https://github.com/php-pds/skeleton) [ ![Codeship Status for CodyErekson/Nucleus](https://app.codeship.com/projects/e0dd7b00-e11c-0135-9caa-3a15b47d4b16/status?branch=master)](https://app.codeship.com/projects/266583)

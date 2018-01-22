@@ -5,6 +5,8 @@
 
 namespace Nucleus\Middleware\ACL;
 
+use Nucleus\Middleware\BaseMiddleware;
+
 /**
  * Class MemberMiddleware
  * @package Nucleus\Middleware\ACL

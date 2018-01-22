@@ -1,10 +1,17 @@
 <?php
+/**
+ * JSON Web Token object
+ */
 
 namespace Nucleus\Models;
 
 use Illuminate\Database\Eloquent\Model as Model;
 use SebastianBergmann\Comparator\DateTimeComparator;
 
+/**
+ * Class Token
+ * @package Nucleus\Models
+ */
 class Token extends Model {
 	protected $table = 'tokens';
 
@@ -14,6 +21,9 @@ class Token extends Model {
 		'expiration'
 	];
 
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
 	public function user()
 	{
 		return $this->hasOne('\Nucleus\Models\User', 'uuid');
@@ -21,11 +31,16 @@ class Token extends Model {
 
 	/**
 	 * Return the user associated with the given token
+	 * @return User
 	 */
 	public function getUser(){
 		return $this->user;
 	}
 
+	/**
+	 * Check if this token is expired or not
+	 * @return bool
+	 */
 	public function isValid()
 	{
 		$expiration = new \DateTime($this->expiration);
@@ -33,6 +48,10 @@ class Token extends Model {
 		return ( $expiration > $now );
 	}
 
+	/**
+	 * Update the actual token and expiration date
+	 * @param $jwt
+	 */
 	public function updateToken($jwt)
 	{
 		$this->update([

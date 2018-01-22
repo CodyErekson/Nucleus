@@ -1,7 +1,14 @@
 <?php
+/**
+ * Acquire and make filled-in form field values available to the Twig template environment
+ */
 
 namespace Nucleus\Middleware;
 
+/**
+ * Class PersistMiddleware
+ * @package Nucleus\Middleware
+ */
 class PersistMiddleware extends BaseMiddleware
 {
 

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Controller for interface based user routes
+ */
 
 namespace Nucleus\Controllers;
 
@@ -6,14 +9,30 @@ use Nucleus\Controllers\BaseController;
 use Nucleus\Models\User;
 use Respect\Validation\Validator as v;
 
+/**
+ * Class AuthController
+ * @package Nucleus\Controllers
+ */
 class AuthController extends BaseController
 {
 
+	/**
+	 * Draw the signup page
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function getSignUp($request, $response)
 	{
 		return $this->container->view->render($response, 'signup.twig');
 	}
 
+	/**
+	 * Validate submitted user data then create a new user
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function postSignUp($request, $response)
 	{
 		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nCreate user payload:", $request->getParsedBody());
@@ -34,11 +53,23 @@ class AuthController extends BaseController
 		return $response->withRedirect($this->container->router->pathFor('home'));
 	}
 
+	/**
+	 * Draw the login page
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function getLogin($request, $response)
 	{
 		return $this->container->view->render($response, 'login.twig');
 	}
 
+	/**
+	 * Validate login credentials then create a user session and JWT token
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function postLogin($request, $response)
 	{
 		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nLogin payload:", $request->getParsedBody());
@@ -58,6 +89,12 @@ class AuthController extends BaseController
 		return $response->withRedirect($this->container->router->pathFor('home'));
 	}
 
+	/**
+	 * Log a user out
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function getLogout($request, $response)
 	{
 		$this->container->user_manager->logout();
@@ -65,11 +102,23 @@ class AuthController extends BaseController
 		return $response->withRedirect($this->container->router->pathFor('home'));
 	}
 
+	/**
+	 * Draw the edit user page
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function getUpdateUser($request, $response)
 	{
 		return $this->container->view->render($response, 'update_profile.twig');
 	}
 
+	/**
+	 * Validate submitted parameters and update given user
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function postUpdateUser($request, $response)
 	{
 		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUpdate user payload:", $request->getParsedBody());
@@ -91,11 +140,23 @@ class AuthController extends BaseController
 		return $response->withRedirect($this->container->router->pathFor('auth.user.update'));
 	}
 
+	/**
+	 * Draw the change password page
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function getPasswordChange($request, $response)
 	{
 		return $this->container->view->render($response, 'change_password.twig');
 	}
 
+	/**
+	 * Validate the provided password and set as given user's password
+	 * @param $request
+	 * @param $response
+	 * @return mixed
+	 */
 	public function postPasswordChange($request, $response)
 	{
 		if ( !$this->container->user_manager->check() ){

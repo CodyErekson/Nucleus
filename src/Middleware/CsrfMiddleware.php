@@ -1,7 +1,14 @@
 <?php
+/**
+ * Create cross-site forgery request tokens and form fields
+ */
 
 namespace Nucleus\Middleware;
 
+/**
+ * Class CsrfMiddleware
+ * @package Nucleus\Middleware
+ */
 class CsrfMiddleware extends BaseMiddleware
 {
 

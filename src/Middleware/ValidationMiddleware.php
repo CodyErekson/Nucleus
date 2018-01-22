@@ -1,7 +1,14 @@
 <?php
+/**
+ * Pass any validation errors from the global error array into the Twig template environment
+ */
 
 namespace Nucleus\Middleware;
 
+/**
+ * Class ValidationMiddleware
+ * @package Nucleus\Middleware
+ */
 class ValidationMiddleware extends BaseMiddleware
 {
 

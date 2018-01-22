@@ -1,16 +1,19 @@
 <?php
-// Application middleware
+/**
+ * Define application middleware. Required by bootstrap.php
+ */
 
-// e.g: $app->add(new \Slim\Csrf\Guard);
 
-// JSON Web Token
+/**
+ * Configure JSON Web Token handling
+ */
 $app->add(new \Slim\Middleware\JwtAuthentication([
 	"secret" => base64_encode(getenv('JWT_SECRET')),
 	"secure" => false,
 	"path" => ["/api/"],
 	"passthrough" => ["/api/user/login/"],
 	"algorithm" => 'HS256',
-	"relaxed" => ["localhost", "nucleus.local"],
+	"relaxed" => ["localhost", getenv('DOMAIN')],
 	"callback" => function ($request, $response, $arguments) use ($container) {
 		$container['token'] = $arguments["decoded"];
 		$container['UserController']->setToken($container['token']);
@@ -27,10 +30,13 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 // A middleware for enabling CORS
 $app->add(new \Nucleus\Middleware\CorsMiddleware($container));
 
+// Respect Validation middleware
 $app->add(new \Nucleus\Middleware\ValidationMiddleware($container));
 
+// Allow field data to persist between page loads
 $app->add(new \Nucleus\Middleware\PersistMiddleware($container));
 
+// Manage CSRF
 $app->add(new \Nucleus\Middleware\CsrfMiddleware($container));
 
 $app->add($container->csrf);

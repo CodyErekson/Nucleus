@@ -2,6 +2,9 @@
 
 require 'src/bootstrap.php';
 
+/**
+ * Pull environment variables (found in config/.env) to use for Phinx configuration
+ */
 return [
 	'paths' => [
 		'migrations' => '%%PHINX_CONFIG_DIR%%/db/migrations',

@@ -1,4 +1,7 @@
 <?php
+/**
+ * Controller for API based user routes
+ */
 
 namespace Nucleus\Controllers;
 
@@ -6,16 +9,31 @@ use Nucleus\Controllers\BaseController;
 use Nucleus\Models\User;
 use Respect\Validation\Validator as v;
 
+/**
+ * Class UserController
+ * @package Nucleus\Controllers
+ */
 class UserController extends BaseController
 {
 
 	protected $token;
 
+	/**
+	 * Accept a token object for use within this class
+	 * @param $token
+	 */
 	public function setToken($token)
 	{
 		$this->token = $token;
 	}
 
+	/**
+	 * Login a user with username/password, used to fetch a user's JSON Web Token
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function login($request, $response, $args)
 	{
 		$data = $request->getParsedBody();
@@ -54,6 +72,13 @@ class UserController extends BaseController
 		}
 	}
 
+	/**
+	 * Destroy current session and JSON Web Token
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function logout($request, $response, $args)
 	{
 		$this->container['debug.log']->debug($this->container->token->context->user->uuid);
@@ -64,11 +89,25 @@ class UserController extends BaseController
 		return $response->withStatus(200);
 	}
 
+	/**
+	 * Return an array of all users in the database
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return collection
+	 */
 	public function getUsers($request, $response, $args)
 	{
 		return $response->getBody()->write(\Nucleus\Models\User::all()->toJson());
 	}
 
+	/**
+	 * Fetch User object for given user as identified by UUID
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return User
+	 */
 	public function getUser($request, $response, $args)
 	{
 		$uuid = $args['uuid'];
@@ -77,6 +116,13 @@ class UserController extends BaseController
 		return $response;
 	}
 
+	/**
+	 * Create a new user
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function createUser($request, $response, $args)
 	{
 		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nCreate user payload:", $request->getParsedBody());
@@ -100,6 +146,13 @@ class UserController extends BaseController
 		return $response->withStatus(201)->getBody()->write($user->toJson());
 	}
 
+	/**
+	 * Update given user as identified by UUID
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function updateUser($request, $response, $args)
 	{
 		$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUpdate user payload:", $request->getParsedBody());
@@ -119,6 +172,13 @@ class UserController extends BaseController
 		return $response->getBody()->write($user->toJson());
 	}
 
+	/**
+	 * Disable given user as identified by UUID
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function deactivateUser($request, $response, $args)
 	{
 		$uuid = $args['uuid'];
@@ -130,6 +190,13 @@ class UserController extends BaseController
 		return $response->getBody()->write($user->toJson());
 	}
 
+	/**
+	 * Enable given user as identified by UUID
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function activateUser($request, $response, $args)
 	{
 		$uuid = $args['uuid'];
@@ -141,6 +208,13 @@ class UserController extends BaseController
 		return $response->getBody()->write($user->toJson());
 	}
 
+	/**
+	 * Entirely destroy given user as identified by UUID
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 * @return mixed
+	 */
 	public function deleteUser($request, $response, $args)
 	{
 		$uuid = $args['uuid'];

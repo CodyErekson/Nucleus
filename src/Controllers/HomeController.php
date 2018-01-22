@@ -1,4 +1,7 @@
 <?php
+/**
+ * Controller for home route -- mostly used for testing at this point
+ */
 
 namespace Nucleus\Controllers;
 
@@ -8,6 +11,10 @@ use Nucleus\Models\Role;
 use phpDocumentor\Reflection\Types\Null_;
 use Twig\Cache\NullCache;
 
+/**
+ * Class HomeController
+ * @package Nucleus\Controllers
+ */
 class HomeController extends BaseController
 {
 	public function home($request, $response, $args)

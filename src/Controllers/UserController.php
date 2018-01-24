@@ -59,8 +59,14 @@ class UserController extends BaseController
             // Find a corresponding token
             $this->container['debug.log']->debug('Looking for token:', $user->toArray());
             if (!$user->getToken()) {
-                $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUnable to retrieve a token.", ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
-                $this->container['error.log']->error("Unable to retrieve a token.", ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]);
+                $this->container['debug.log']->debug(
+                    __FILE__ . " on line " . __LINE__ . "\nUnable to retrieve a token.",
+                    ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]
+                );
+                $this->container['error.log']->error(
+                    "Unable to retrieve a token.",
+                    ['payload' => $data, 'file' => __FILE__, 'line' => __LINE__]
+                );
                 return $response->withStatus(400);
             }
             $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nToken: " . $user->token->token);
@@ -125,7 +131,10 @@ class UserController extends BaseController
      */
     public function createUser($request, $response, $args)
     {
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nCreate user payload:", $request->getParsedBody());
+        $this->container['debug.log']->debug(
+            __FILE__ . " on line " . __LINE__ . "\nCreate user payload:",
+            $request->getParsedBody()
+        );
 
         if (!$this->container->user_manager->createUserValidation($request)) {
             $res = $response->withHeader("Content-Type", "application/json");
@@ -155,7 +164,10 @@ class UserController extends BaseController
      */
     public function updateUser($request, $response, $args)
     {
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUpdate user payload:", $request->getParsedBody());
+        $this->container['debug.log']->debug(
+            __FILE__ . " on line " . __LINE__ . "\nUpdate user payload:",
+            $request->getParsedBody()
+        );
 
         $uuid = $args['uuid'];
         $data = $request->getParsedBody();

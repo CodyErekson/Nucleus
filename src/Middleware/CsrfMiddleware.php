@@ -12,19 +12,18 @@ namespace Nucleus\Middleware;
 class CsrfMiddleware extends BaseMiddleware
 {
 
-	public function __invoke($request, $response, $next)
-	{
+    public function __invoke($request, $response, $next)
+    {
 
-		$this->container->view->getEnvironment()->addGlobal('csrf', [
-			'field' => '
+        $this->container->view->getEnvironment()->addGlobal('csrf', [
+            'field' => '
 				<input type="hidden" name="' . $this->container->csrf->getTokenNameKey() . '" value="' . $this->container->csrf->getTokenName() . '">
 				<input type="hidden" name="' . $this->container->csrf->getTokenValueKey() . '" value="' . $this->container->csrf->getTokenValue() . '">
 			',
-		]);
+        ]);
 
-		$response = $next($request, $response);
+        $response = $next($request, $response);
 
-		return $response;
-	}
-
+        return $response;
+    }
 }

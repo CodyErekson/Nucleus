@@ -14,21 +14,21 @@ use \Nucleus\Middleware\CsrfCheckMiddleware;
 
 $app->get('/[{name}]', 'HomeController:home')->setName('home');
 
-$app->get('/test/', function($request, $response) {
-	/*$data = $request->getParsedBody();
-	$user = \Nucleus\Models\User::where('username', '=', $data['username']);
-	var_dump($user->exists());
-	die();
-	if (preg_match("/Bearer\s+(.*)$/i", $request->getHeader("Authorization")[0], $matches))
-	{
-		$token = \Nucleus\Models\Token::where('token', '=', $matches[1])->first();
-		var_dump($token->getUser());
-	}
-	die();
-	$users = \Nucleus\Models\User::all();
-	return $response->getBody()->write($users->toJson());*/
-	$args = [];
-	return $this->view->render($response, 'test_page.twig', $args);
+$app->get('/test/', function ($request, $response) {
+    /*$data = $request->getParsedBody();
+    $user = \Nucleus\Models\User::where('username', '=', $data['username']);
+    var_dump($user->exists());
+    die();
+    if (preg_match("/Bearer\s+(.*)$/i", $request->getHeader("Authorization")[0], $matches))
+    {
+        $token = \Nucleus\Models\Token::where('token', '=', $matches[1])->first();
+        var_dump($token->getUser());
+    }
+    die();
+    $users = \Nucleus\Models\User::all();
+    return $response->getBody()->write($users->toJson());*/
+    $args = [];
+    return $this->view->render($response, 'test_page.twig', $args);
 });
 
 /**
@@ -38,29 +38,27 @@ $app->get('/test/', function($request, $response) {
 // Guest routes
 $app->group('', function () {
 
-	$this->get('/auth/signup', 'AuthController:getSignUp')->setName('auth.signup');
+    $this->get('/auth/signup', 'AuthController:getSignUp')->setName('auth.signup');
 
-	$this->post('/auth/signup', 'AuthController:postSignUp');
+    $this->post('/auth/signup', 'AuthController:postSignUp');
 
-	$this->get('/auth/login', 'AuthController:getLogin')->setName('auth.login');
+    $this->get('/auth/login', 'AuthController:getLogin')->setName('auth.login');
 
-	$this->post('/auth/login', 'AuthController:postLogin');
-
+    $this->post('/auth/login', 'AuthController:postLogin');
 })->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
 $app->group('', function () {
 
-	$this->get('/auth/logout', 'AuthController:getLogout')->setName('auth.logout');
+    $this->get('/auth/logout', 'AuthController:getLogout')->setName('auth.logout');
 
-	$this->get('/auth/user/update', 'AuthController:getUpdateUser')->setName('auth.user.update');
+    $this->get('/auth/user/update', 'AuthController:getUpdateUser')->setName('auth.user.update');
 
-	$this->post('/auth/user/update', 'AuthController:postUpdateUser');
+    $this->post('/auth/user/update', 'AuthController:postUpdateUser');
 
-	$this->get('/auth/user/password', 'AuthController:getPasswordChange')->setName('auth.user.password');
+    $this->get('/auth/user/password', 'AuthController:getPasswordChange')->setName('auth.user.password');
 
-	$this->post('/auth/user/password', 'AuthController:postPasswordChange');
-
+    $this->post('/auth/user/password', 'AuthController:postPasswordChange');
 })->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 /**
@@ -70,17 +68,16 @@ $app->group('', function () {
 // Admin routes
 $app->group('', function () {
 
-	$this->post('/api/user/', 'UserController:createUser');
+    $this->post('/api/user/', 'UserController:createUser');
 
-	//remember to include header X-Http-Method-Override:PUT, actually use POST
-	$this->put('/api/user/{uuid}', 'UserController:updateUser');
+    //remember to include header X-Http-Method-Override:PUT, actually use POST
+    $this->put('/api/user/{uuid}', 'UserController:updateUser');
 
-	$this->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
+    $this->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
 
-	$this->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
+    $this->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
 
-	$this->delete('/api/user/{uuid}', 'UserController:deleteUser');
-
+    $this->delete('/api/user/{uuid}', 'UserController:deleteUser');
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container));
 
 // Authenticate routes
@@ -92,5 +89,3 @@ $app->post('/api/user/logout/', 'UserController:logout');
 $app->get('/api/user/', 'UserController:getUsers');
 
 $app->get('/api/user/{uuid}', 'UserController:getUser');
-
-

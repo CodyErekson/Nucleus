@@ -13,9 +13,9 @@ use Respect\Validation\Exceptions\ValidationException;
  */
 class PasswordCheckException extends ValidationException
 {
-	public static $defaultTemplates = [
-		self::MODE_DEFAULT => [
-			self::STANDARD => 'Password is incorrect.'
-		],
-	];
+    public static $defaultTemplates = [
+        self::MODE_DEFAULT => [
+            self::STANDARD => 'Password is incorrect.'
+        ],
+    ];
 }

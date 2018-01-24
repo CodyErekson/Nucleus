@@ -15,26 +15,26 @@ use Respect\Validation\Rules\AbstractRule;
 class ConfirmPassword extends AbstractRule
 {
 
-	protected $password;
+    protected $password;
 
-	/**
-	 * ConfirmPassword constructor.
-	 * @param $password
-	 */
-	public function __construct($password)
-	{
-		$this->password = $password;
-	}
+    /**
+     * ConfirmPassword constructor.
+     * @param $password
+     */
+    public function __construct($password)
+    {
+        $this->password = $password;
+    }
 
-	/**
-	 * @param $input
-	 * @return bool
-	 */
-	public function validate($input)
-	{
-		if ( $input === $this->password ){
-			return true;
-		}
-		return false;
-	}
+    /**
+     * @param $input
+     * @return bool
+     */
+    public function validate($input)
+    {
+        if ($input === $this->password) {
+            return true;
+        }
+        return false;
+    }
 }

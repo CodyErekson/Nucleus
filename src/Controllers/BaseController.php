@@ -10,12 +10,11 @@ namespace Nucleus\Controllers;
  * @package Nucleus\Controllers
  */
 class BaseController
-
 {
-	protected $container;
+    protected $container;
 
-	public function __construct(\Slim\Container $container)
-	{
-		$this->container = $container;
-	}
+    public function __construct(\Slim\Container $container)
+    {
+        $this->container = $container;
+    }
 }

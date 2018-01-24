@@ -14,42 +14,42 @@ use Respect\Validation\Exceptions\NestedValidationException;
  */
 class Validator
 {
-	protected $errors;
-	protected $container;
+    protected $errors;
+    protected $container;
 
-	public function __construct(\Slim\Container $container)
-	{
-		$this->container = $container;
-	}
+    public function __construct(\Slim\Container $container)
+    {
+        $this->container = $container;
+    }
 
-	/**
-	 * Validate provided data, put failure messages in global error array
-	 * @param $request
-	 * @param array $rules
-	 * @return $this
-	 */
-	public function validate($request, array $rules)
-	{
-		foreach ($rules as $field => $rule){
-			try {
-				$rule->setName(ucfirst($field))->assert($request->getParam($field));
-			} catch (NestedValidationException $e) {
-				$this->errors[$field] = $e->getMessages();
-				$this->container['debug.log']->debug("Validation error for " . $field, $e->getMessages());
-			}
-		}
+    /**
+     * Validate provided data, put failure messages in global error array
+     * @param $request
+     * @param array $rules
+     * @return $this
+     */
+    public function validate($request, array $rules)
+    {
+        foreach ($rules as $field => $rule) {
+            try {
+                $rule->setName(ucfirst($field))->assert($request->getParam($field));
+            } catch (NestedValidationException $e) {
+                $this->errors[$field] = $e->getMessages();
+                $this->container['debug.log']->debug("Validation error for " . $field, $e->getMessages());
+            }
+        }
 
-		$_SESSION['errors'] = $this->errors;
+        $_SESSION['errors'] = $this->errors;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Check if a validation failed
-	 * @return bool
-	 */
-	public function failed()
-	{
-		return !empty($this->errors);
-	}
+    /**
+     * Check if a validation failed
+     * @return bool
+     */
+    public function failed()
+    {
+        return !empty($this->errors);
+    }
 }

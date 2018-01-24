@@ -15,12 +15,12 @@ use Respect\Validation\Rules\AbstractRule;
 class UsernameExists extends AbstractRule
 {
 
-	/**
-	 * @param $input
-	 * @return bool
-	 */
-	public function validate($input)
-	{
-		return User::where('username', $input)->where('active', '=', true)->count() === 1;
-	}
+    /**
+     * @param $input
+     * @return bool
+     */
+    public function validate($input)
+    {
+        return User::where('username', $input)->where('active', '=', true)->count() === 1;
+    }
 }

@@ -15,7 +15,7 @@ $container = $app->getContainer();
  * @return \Nucleus\Helpers\TokenManager
  */
 $container['token_manager'] = function ($c) {
-	return new \Nucleus\Helpers\TokenManager($c['debug.log']);
+    return new \Nucleus\Helpers\TokenManager($c['debug.log']);
 };
 
 /**
@@ -24,7 +24,7 @@ $container['token_manager'] = function ($c) {
  * @return \Nucleus\Helpers\UserManager
  */
 $container['user_manager'] = function ($c) {
-	return new \Nucleus\Helpers\UserManager($c);
+    return new \Nucleus\Helpers\UserManager($c);
 };
 
 /* Components */
@@ -34,7 +34,7 @@ $container['user_manager'] = function ($c) {
  * @return \Slim\Flash\Messages
  */
 $container['flash'] = function () {
-	return new \Slim\Flash\Messages();
+    return new \Slim\Flash\Messages();
 };
 
 /**
@@ -43,33 +43,33 @@ $container['flash'] = function () {
  * @return \Slim\Views\Twig
  */
 $container['view'] = function ($c) {
-	$env = $c->get('settings')['env'];
-	$view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates'), [
-		//'cache' => realpath($env['env_path'] . '/src/View/cache'),
-		'auto_reload' => ( getenv('ENV') == 'development' ? true : false ),
-		'strict_variables' => ( getenv('ENV') == 'development' ? false : true ),
-		//'debug' => true
-	]);
+    $env = $c->get('settings')['env'];
+    $view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates'), [
+        //'cache' => realpath($env['env_path'] . '/src/View/cache'),
+        'auto_reload' => ( getenv('ENV') == 'development' ? true : false ),
+        'strict_variables' => ( getenv('ENV') == 'development' ? false : true ),
+        //'debug' => true
+    ]);
 
-	// Instantiate and add Slim and Nucleus specific extensions
-	$basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
-	$view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
-	$view->addExtension(new Nucleus\View\DebugExtension);
+    // Instantiate and add Slim and Nucleus specific extensions
+    $basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
+    $view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
+    $view->addExtension(new Nucleus\View\DebugExtension);
 
-	// Pass in some global variables
-	$view->getEnvironment()->addGlobal('env', getenv('ENV'));
-	$view->getEnvironment()->addGlobal('name', getenv('NAME'));
-	$view->getEnvironment()->addGlobal('base_url', getenv('BASE_URL'));
-	$view->getEnvironment()->addGlobal('domain', getenv('DOMAIN'));
+    // Pass in some global variables
+    $view->getEnvironment()->addGlobal('env', getenv('ENV'));
+    $view->getEnvironment()->addGlobal('name', getenv('NAME'));
+    $view->getEnvironment()->addGlobal('base_url', getenv('BASE_URL'));
+    $view->getEnvironment()->addGlobal('domain', getenv('DOMAIN'));
 
-	$view->getEnvironment()->addGlobal('auth', [
-		'check' => $c->user_manager->check(),
-		'user' => $c->user_manager->currentUser()
-	]);
+    $view->getEnvironment()->addGlobal('auth', [
+        'check' => $c->user_manager->check(),
+        'user' => $c->user_manager->currentUser()
+    ]);
 
-	$view->getEnvironment()->addGlobal('flash', $c->flash);
+    $view->getEnvironment()->addGlobal('flash', $c->flash);
 
-	return $view;
+    return $view;
 };
 
 /**
@@ -77,18 +77,18 @@ $container['view'] = function ($c) {
  * Define new logs by adding its name to the $LOGS variable in config/.env, comma separated
  */
 $logs = explode(",", getenv('LOGS'));
-foreach($logs as $log) {
-	$log_name = $log . ".log";
+foreach ($logs as $log) {
+    $log_name = $log . ".log";
 
-	$container[$log_name] = function ($c) use ($log_name) {
-		$env = $c->get('settings')['env'];
-		$settings = $c->get('settings')['logger'];
-		$path = realpath($env['env_path'] . getenv('LOGS_ROOT')) . '/' . $log_name;
-		$logger = new Monolog\Logger($log_name);
-		$logger->pushProcessor(new Monolog\Processor\UidProcessor());
-		$logger->pushHandler(new Monolog\Handler\StreamHandler($path, $settings['level']));
-		return $logger;
-	};
+    $container[$log_name] = function ($c) use ($log_name) {
+        $env = $c->get('settings')['env'];
+        $settings = $c->get('settings')['logger'];
+        $path = realpath($env['env_path'] . getenv('LOGS_ROOT')) . '/' . $log_name;
+        $logger = new Monolog\Logger($log_name);
+        $logger->pushProcessor(new Monolog\Processor\UidProcessor());
+        $logger->pushHandler(new Monolog\Handler\StreamHandler($path, $settings['level']));
+        return $logger;
+    };
 }
 
 /**
@@ -97,13 +97,13 @@ foreach($logs as $log) {
  * @return \Illuminate\Database\Capsule\Manager
  */
 $container['db'] = function ($c) {
-	$capsule = new \Illuminate\Database\Capsule\Manager;
-	$capsule->addConnection($c['settings']['db']);
+    $capsule = new \Illuminate\Database\Capsule\Manager;
+    $capsule->addConnection($c['settings']['db']);
 
-	$capsule->setAsGlobal();
-	$capsule->bootEloquent();
+    $capsule->setAsGlobal();
+    $capsule->bootEloquent();
 
-	return $capsule;
+    return $capsule;
 };
 
 $container->get('db');
@@ -112,12 +112,12 @@ $container->get('db');
  * @return \Slim\Csrf\Guard
  */
 $container['csrf'] = function () {
-	$guard = new \Slim\Csrf\Guard();
-	$guard->setFailureCallable(function ($request, $response, $next) {
-		$request = $request->withAttribute("csrf_status", false);
-		return $next($request, $response);
-	});
-	return $guard;
+    $guard = new \Slim\Csrf\Guard();
+    $guard->setFailureCallable(function ($request, $response, $next) {
+        $request = $request->withAttribute("csrf_status", false);
+        return $next($request, $response);
+    });
+    return $guard;
 };
 
 /**
@@ -126,7 +126,7 @@ $container['csrf'] = function () {
  * @return \Nucleus\Helpers\Validator
  */
 $container['validator'] = function ($c) {
-	return new \Nucleus\Helpers\Validator($c);
+    return new \Nucleus\Helpers\Validator($c);
 };
 
 /**
@@ -139,7 +139,7 @@ v::with('Nucleus\\Helpers\\Rules\\');
  * @return \Firebase\JWT\JWT
  */
 $container['jwt'] = function () {
-	return new Firebase\JWT\JWT();
+    return new Firebase\JWT\JWT();
 };
 
 /**
@@ -147,26 +147,26 @@ $container['jwt'] = function () {
  * @return \Ramsey\Uuid\UuidInterface
  */
 $container['uuid'] = function () {
-	return Ramsey\Uuid\Uuid::uuid4();
-	//return Ramsey\Uuid\Uuid;
+    return Ramsey\Uuid\Uuid::uuid4();
+    //return Ramsey\Uuid\Uuid;
 };
 
 /**
  * Whoops -- error handling
  */
 $container['phpErrorHandler'] = $container['errorHandler'] = function ($container) {
-	$logger = $container['error.log'];
-	$whoopsHandler = new Dopesong\Slim\Error\Whoops();
+    $logger = $container['error.log'];
+    $whoopsHandler = new Dopesong\Slim\Error\Whoops();
 
-	$whoopsHandler->pushHandler(
-		function ($exception) use ($logger) {
-			/** @var \Exception $exception */
-			$logger->error($exception->getMessage(), ['exception' => $exception]);
-			return Whoops\Handler\Handler::DONE;
-		}
-	);
+    $whoopsHandler->pushHandler(
+        function ($exception) use ($logger) {
+            /** @var \Exception $exception */
+            $logger->error($exception->getMessage(), ['exception' => $exception]);
+            return Whoops\Handler\Handler::DONE;
+        }
+    );
 
-	return $whoopsHandler;
+    return $whoopsHandler;
 };
 
 /* Controller Classes */
@@ -176,9 +176,9 @@ $container['phpErrorHandler'] = $container['errorHandler'] = function ($containe
  * @param $c
  * @return \Nucleus\Controllers\HomeController
  */
-$container['HomeController'] = function($c) {
-	$controller = new \Nucleus\Controllers\HomeController($c);
-	return $controller;
+$container['HomeController'] = function ($c) {
+    $controller = new \Nucleus\Controllers\HomeController($c);
+    return $controller;
 };
 
 /**
@@ -186,9 +186,9 @@ $container['HomeController'] = function($c) {
  * @param $c
  * @return \Nucleus\Controllers\UserController
  */
-$container['UserController'] = function($c) {
-	$controller = new \Nucleus\Controllers\UserController($c);
-	return $controller;
+$container['UserController'] = function ($c) {
+    $controller = new \Nucleus\Controllers\UserController($c);
+    return $controller;
 };
 
 /**
@@ -196,7 +196,7 @@ $container['UserController'] = function($c) {
  * @param $c
  * @return \Nucleus\Controllers\AuthController
  */
-$container['AuthController'] = function($c) {
-	$controller = new \Nucleus\Controllers\AuthController($c);
-	return $controller;
+$container['AuthController'] = function ($c) {
+    $controller = new \Nucleus\Controllers\AuthController($c);
+    return $controller;
 };

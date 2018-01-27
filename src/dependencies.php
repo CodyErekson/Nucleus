@@ -152,6 +152,14 @@ $container['uuid'] = function () {
 };
 
 /**
+ * Event Emitter Handler
+ * @return League\Event\Emitter
+ */
+$container['emitter'] = function () {
+    return new League\Event\Emitter;
+};
+
+/**
  * Whoops -- error handling
  */
 $container['phpErrorHandler'] = $container['errorHandler'] = function ($container) {
@@ -167,6 +175,16 @@ $container['phpErrorHandler'] = $container['errorHandler'] = function ($containe
     );
 
     return $whoopsHandler;
+};
+
+/* Listener Classes */
+
+/**
+ * Register a test listener
+ * @return \Nucleus\Helpers\Listeners\TestListener
+ */
+$container['listener.test'] = function () {
+    return new \Nucleus\Helpers\Listeners\TestListener();
 };
 
 /* Controller Classes */

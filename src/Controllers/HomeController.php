@@ -34,4 +34,15 @@ class HomeController extends BaseController
         //$this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nhello " . print_r($args, true));
         return $this->container->view->render($response, 'home.twig', $args);
     }
+
+    /**
+     * Testing the event/emitter model
+     * @param $request
+     * @param $response
+     * @param $arguments
+     */
+    public function eventTest($request, $response, $arguments)
+    {
+        $this->container->emitter->emit("event.test");
+    }
 }

@@ -35,7 +35,10 @@ class AuthController extends BaseController
      */
     public function postSignUp($request, $response)
     {
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nCreate user payload:", $request->getParsedBody());
+        $this->container['debug.log']->debug(
+            __FILE__ . " on line " . __LINE__ . "\nCreate user payload:",
+            $request->getParsedBody()
+        );
 
         if (!$this->container->user_manager->createUserValidation($request)) {
             return $response->withRedirect($this->container->router->pathFor('auth.signup'));
@@ -72,14 +75,18 @@ class AuthController extends BaseController
      */
     public function postLogin($request, $response)
     {
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nLogin payload:", $request->getParsedBody());
+        $this->container['debug.log']->debug(
+            __FILE__ . " on line " . __LINE__ . "\nLogin payload:",
+            $request->getParsedBody()
+        );
 
         if (!$this->container->user_manager->loginValidation($request)) {
             return $response->withRedirect($this->container->router->pathFor('auth.login'));
         }
 
         try {
-            $user = \Nucleus\Models\User::where('username', $request->getParam('username'))->where('active', true)->first();
+            $user = \Nucleus\Models\User::where('username', $request->getParam('username'))
+                ->where('active', true)->first();
             $this->container->user_manager->login($user->uuid);
         } catch (\Exception $e) {
             $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
@@ -121,7 +128,10 @@ class AuthController extends BaseController
      */
     public function postUpdateUser($request, $response)
     {
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUpdate user payload:", $request->getParsedBody());
+        $this->container['debug.log']->debug(
+            __FILE__ . " on line " . __LINE__ . "\nUpdate user payload:",
+            $request->getParsedBody()
+        );
 
         $user = $this->container->user_manager->currentUser();
         if (!$this->container->user_manager->updateUserValidation($request, $user->uuid)) {

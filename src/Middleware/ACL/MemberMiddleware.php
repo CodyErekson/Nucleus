@@ -22,7 +22,10 @@ class MemberMiddleware extends BaseMiddleware
             return $response->withRedirect($this->container->router->pathFor('auth.login'));
         }
 
-        $this->container->view->getEnvironment()->addGlobal('user', $this->container->user_manager->currentUser()->toArray());
+        $this->container->view->getEnvironment()->addGlobal(
+            'user',
+            $this->container->user_manager->currentUser()->toArray()
+        );
         $response = $next($request, $response);
 
         return $response;

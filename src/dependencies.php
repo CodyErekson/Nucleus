@@ -4,7 +4,6 @@
  */
 
 use Respect\Validation\Validator as v;
-//use League\Event\Emitter;
 
 $container = $app->getContainer();
 

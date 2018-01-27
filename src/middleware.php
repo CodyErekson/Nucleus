@@ -36,6 +36,9 @@ $app->add(new \Nucleus\Middleware\ValidationMiddleware($container));
 // Allow field data to persist between page loads
 $app->add(new \Nucleus\Middleware\PersistMiddleware($container));
 
+// Register event listeners
+$app->add(new \Nucleus\Middleware\EmitterMiddleware($container));
+
 // Manage CSRF
 $app->add(new \Nucleus\Middleware\CsrfMiddleware($container));
 

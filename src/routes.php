@@ -14,6 +14,9 @@ use \Nucleus\Middleware\CsrfCheckMiddleware;
 
 $app->get('/[{name}]', 'HomeController:home')->setName('home');
 
+// An event emitter test
+$app->get('/event/', 'HomeController:eventTest');
+
 $app->get('/test/', function ($request, $response) {
     /*$data = $request->getParsedBody();
     $user = \Nucleus\Models\User::where('username', '=', $data['username']);

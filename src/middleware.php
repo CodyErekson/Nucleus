@@ -3,6 +3,8 @@
  * Define application middleware. Required by bootstrap.php
  */
 
+// CLI runner middleware
+$app->add(\adrianfalleiro\SlimCLIRunner::class);
 
 /**
  * Configure JSON Web Token handling

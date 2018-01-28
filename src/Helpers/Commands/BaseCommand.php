@@ -27,5 +27,4 @@ class BaseCommand
     public function command($arguments)
     {
     }
-
 }

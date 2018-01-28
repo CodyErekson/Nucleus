@@ -16,6 +16,7 @@ The major components and relevant documentation are below:
 - Monolog (logging) https://github.com/Seldaek/monolog
 - Respect Validation (validation) https://github.com/Respect/Validation
 - Whoops (error reporting) https://github.com/filp/whoops
+- League\Event (event emitter) http://event.thephpleague.com/2.0/
 
 
 ### Requirements

@@ -160,6 +160,14 @@ $container['emitter'] = function () {
 };
 
 /**
+ * CLImate -- CLI return formatting
+ * @return \League\CLImate\CLImate
+ */
+$container['cli'] = function () {
+    return new League\CLImate\CLImate;
+};
+
+/**
  * Whoops -- error handling
  */
 $container['phpErrorHandler'] = $container['errorHandler'] = function ($container) {

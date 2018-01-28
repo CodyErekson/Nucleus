@@ -50,6 +50,12 @@ $app = new \Slim\App($settings);
 require(__DIR__ . '/../src/dependencies.php');
 
 /**
+ * Get contents of composer.json in case we need it
+ */
+$composer = file_get_contents(__DIR__ . '/../composer.json');
+$container['composer']  = json_decode($composer, true);
+
+/**
  * Register middleware
  */
 require(__DIR__ . '/../src/middleware.php');

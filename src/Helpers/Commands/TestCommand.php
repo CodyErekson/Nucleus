@@ -6,6 +6,6 @@ class TestCommand extends BaseCommand
 {
     public function command($arguments)
     {
-        echo "hello there";
+        $this->cli->backgroundGreen()->red("hello there");
     }
 }

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+PHP_BINARY="/usr/bin/php"
+DOC_ROOT="../public"
+VENDOR_PATH="../vendor"
+
+PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+
+if [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phinx" ] && [ "$1" = "db" ]
+then
+	shift
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" "$@"
+	exit
+elif [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phpunit" ] && [ "$1" = "test" ]
+then
+	shift
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpunit" "$@"
+	exit
+elif [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phpcs" ] && [ "$1" = "cs" ]
+then
+	shift
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpcs" "$@"
+	exit
+elif [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phpcbf" ] && [ "$1" = "csfix" ]
+then
+	shift
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpcbf" "$@"
+	exit
+fi
+
+$PHP_BINARY "$PARENT_PATH/$DOC_ROOT/index.php" "$@"

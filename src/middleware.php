@@ -29,6 +29,9 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     }
 ]));
 
+// Run default functionality on all CLI commands
+$app->add(new \Nucleus\Middleware\CliMiddleware($container));
+
 // A middleware for enabling CORS
 $app->add(new \Nucleus\Middleware\CorsMiddleware($container));
 

@@ -3,6 +3,8 @@
  * Define application middleware. Required by bootstrap.php
  */
 
+// CLI runner middleware
+$app->add(\adrianfalleiro\SlimCLIRunner::class);
 
 /**
  * Configure JSON Web Token handling
@@ -26,6 +28,9 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
             ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
     }
 ]));
+
+// Run default functionality on all CLI commands
+$app->add(new \Nucleus\Middleware\CliMiddleware($container));
 
 // A middleware for enabling CORS
 $app->add(new \Nucleus\Middleware\CorsMiddleware($container));

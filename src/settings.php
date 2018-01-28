@@ -33,4 +33,7 @@ return [
             'prefix' => ''
         ],
     ],
+    'commands' => [
+        'Test' => \Nucleus\Helpers\Commands\TestCommand::class
+    ],
 ];

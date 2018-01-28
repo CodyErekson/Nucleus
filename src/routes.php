@@ -18,6 +18,13 @@ $app->get('/[{name}]', 'HomeController:home')->setName('home');
 $app->get('/event/', 'HomeController:eventTest');
 
 $app->get('/test/', function ($request, $response) {
+    $routes = $this->router->getRoutes();
+    // And then iterate over $routes
+
+    foreach ($routes as $route) {
+        echo $route->getPattern() . " -- " . $route->getName() .  "<br>";
+    }
+    dd();
     /*$data = $request->getParsedBody();
     $user = \Nucleus\Models\User::where('username', '=', $data['username']);
     var_dump($user->exists());

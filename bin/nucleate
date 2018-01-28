@@ -27,6 +27,6 @@ then
 	shift
 	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpcbf" "$@"
 	exit
+else
+	$PHP_BINARY "$PARENT_PATH/$DOC_ROOT/index.php" "$@"
 fi
-
-$PHP_BINARY "$PARENT_PATH/$DOC_ROOT/index.php" "$@"

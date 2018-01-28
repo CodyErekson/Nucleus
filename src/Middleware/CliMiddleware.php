@@ -24,7 +24,7 @@ class CliMiddleware extends BaseMiddleware
     private function defaultOutput()
     {
         $env = $this->container->get('settings')['env'];
-        $path = realpath($env['env_path'] . '/bin');
+        $path = realpath($env['env_path'] . '/bin/.resource');
         $this->container->cli->addArt($path);
         $this->container->cli->backgroundBlue()->red()->draw('title');
         $this->container->cli->green()->inline("v" . $this->container->composer['version']);

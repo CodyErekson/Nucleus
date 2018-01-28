@@ -5,6 +5,8 @@
 
 namespace Nucleus\Middleware;
 
+use \Interop\Container\ContainerInterface;
+
 /**
  * Class BaseMiddleware
  * @package Nucleus\Middleware
@@ -13,7 +15,7 @@ class BaseMiddleware
 {
     protected $container;
 
-    public function __construct(\Slim\Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }

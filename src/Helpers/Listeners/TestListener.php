@@ -2,10 +2,9 @@
 
 namespace Nucleus\Helpers\Listeners;
 
-use League\Event\AbstractListener;
 use League\Event\EventInterface;
 
-class TestListener extends AbstractListener
+class TestListener extends BaseListener
 {
     public function handle(EventInterface $event)
     {

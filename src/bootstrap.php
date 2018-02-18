@@ -35,8 +35,10 @@ session_start();
 /**
  * Get local environment variables
  */
-$env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../config'));
+$env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../config'), ENVFILE);
 $env->load();
+
+putenv("SRC_ROOT=" . __DIR__);
 
 /**
  * Instantiate Slim framework app
@@ -54,6 +56,21 @@ require(__DIR__ . '/../src/dependencies.php');
  */
 $composer = file_get_contents(__DIR__ . '/../composer.json');
 $container['composer']  = json_decode($composer, true);
+
+/**
+ * And grab our global settings from the database, store in DIC and set env vars as defined
+ */
+if ($container->db->schema()->hasTable('settings')) {
+    $settings = \Nucleus\Models\Setting::all();
+    $s = [];
+    foreach ($settings as $setting) {
+        $s[$setting->setting] = $setting->value;
+        if ($setting->env) {
+            putenv($setting->setting . "=" . $setting->value);
+        }
+    }
+    $container['global_settings'] = $s;
+}
 
 /**
  * Register middleware

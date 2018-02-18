@@ -48,13 +48,14 @@ $container['view'] = function ($c) {
         //'cache' => realpath($env['env_path'] . '/src/View/cache'),
         'auto_reload' => ( getenv('ENV') == 'development' ? true : false ),
         'strict_variables' => ( getenv('ENV') == 'development' ? false : true ),
-        //'debug' => true
+        'debug' => true
     ]);
 
     // Instantiate and add Slim and Nucleus specific extensions
     $basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
     $view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
     $view->addExtension(new Nucleus\View\DebugExtension);
+    $view->addExtension(new Twig_Extension_Debug());
 
     // Pass in some global variables
     $view->getEnvironment()->addGlobal('env', getenv('ENV'));
@@ -62,10 +63,13 @@ $container['view'] = function ($c) {
     $view->getEnvironment()->addGlobal('base_url', getenv('BASE_URL'));
     $view->getEnvironment()->addGlobal('domain', getenv('DOMAIN'));
 
-    $view->getEnvironment()->addGlobal('auth', [
-        'check' => $c->user_manager->check(),
-        'user' => $c->user_manager->currentUser()
-    ]);
+    if ($c->user_manager->check()) {
+        $view->getEnvironment()->addGlobal('auth', [
+            'check' => $c->user_manager->check(),
+            'user' => $c->user_manager->currentUser(),
+            'roles' => $c->user_manager->currentUser()->getRoles()
+        ]);
+    };
 
     $view->getEnvironment()->addGlobal('flash', $c->flash);
 

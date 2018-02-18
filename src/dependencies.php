@@ -67,6 +67,10 @@ $container['view'] = function ($c) {
         'user' => $c->user_manager->currentUser()
     ]);
 
+    if ( $c->user_manager->check() ) {
+        $view->getEnvironment()->addGlobal('roles', $c->user_manager->currentUser()->getRoles());
+    }
+
     $view->getEnvironment()->addGlobal('flash', $c->flash);
 
     return $view;

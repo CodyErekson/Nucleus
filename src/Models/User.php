@@ -18,6 +18,7 @@ class User extends Model
     protected $primaryKey = 'uuid';
     protected $container = null;
     public $incrementing = false;
+    protected $admin = false;
 
     protected $fillable = [
         'uuid',
@@ -57,6 +58,24 @@ class User extends Model
     }
 
     /**
+     * Toggle admin status
+     * @param bool
+     */
+    public function setAdmin($state)
+    {
+        $this->admin = (bool)$state;
+    }
+
+    /**
+     * Return admin status
+     * @return bool
+     */
+    public function getAdmin()
+    {
+        return $this->admin;
+    }
+
+    /**
      * Define the user's password
      * @param $password
      */
@@ -86,7 +105,7 @@ class User extends Model
     {
         $roles = [];
         foreach ($this->roles as $role) {
-            $roles[$role->id] = ['role' => $role->role];
+            $roles[$role->role] = true;
         }
         return $roles;
     }

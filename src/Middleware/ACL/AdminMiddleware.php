@@ -18,16 +18,17 @@ class AdminMiddleware extends BaseMiddleware
     {
         $roles = $this->container->user_manager->currentUser()->getRoles();
         $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nRoles", $roles);
-        if (in_array("admin", $roles)) {
+        if ( (isset($roles['admin'])) && ($roles['admin']) ){
+            // User is an admin
+            $this->container->user_manager->currentUser()->setAdmin(true);
+            $response = $next($request, $response);
+            return $response;
+        } else {
             $this->container->flash->addMessage('error', 'This page is only available to administrators.');
             $res = $response->withHeader("Content-Type", "application/json");
             $res = $res->withStatus(401);
             $res->getBody()->write(json_encode(['error' => 'This page is only available to administrators.']));
             return $res;
         }
-
-        $response = $next($request, $response);
-
-        return $response;
     }
 }

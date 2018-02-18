@@ -50,6 +50,19 @@ class UserManager
     }
 
     /**
+     * Check if user is an admin
+     * @return bool
+     */
+    public function adminCheck()
+    {
+        $roles = $this->container->user_manager->currentUser()->getRoles();
+        if (in_array("admin", $roles)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Assign a UUID to a user
      * @param $uuid
      */

@@ -18,6 +18,7 @@ class User extends Model
     protected $primaryKey = 'uuid';
     protected $container = null;
     public $incrementing = false;
+    protected $admin = false;
 
     protected $fillable = [
         'uuid',
@@ -57,25 +58,49 @@ class User extends Model
     }
 
     /**
+     * Toggle admin status
+     * @param bool
+     * @return bool
+     */
+    public function setAdmin($state)
+    {
+        $role = \Nucleus\Models\Role::where("role", "=", "admin")->first();
+        if ($state) { //add
+            return $this->addRole($role->id);
+        } else { //remove
+            return $this->removeRole($role->id);
+        }
+    }
+
+    /**
+     * Return admin status
+     * @return bool
+     */
+    public function getAdmin()
+    {
+        return $this->roles->contains('role', 'admin');
+    }
+
+    /**
      * Define the user's password
      * @param $password
+     * @return bool
      */
     public function setPassword($password)
     {
-        $this->update([
-            'password' => password_hash($password, PASSWORD_BCRYPT)
-        ]);
+        $this->password == password_hash($password, PASSWORD_BCRYPT);
+        return $this->save();
     }
 
     /**
      * Enable or disable user
      * @param bool $state
+     * @return bool
      */
     public function setActive($state = false)
     {
-        $this->update([
-            'active' => $state
-        ]);
+        $this->active = $state;
+        return $this->save();
     }
 
     /**
@@ -86,9 +111,61 @@ class User extends Model
     {
         $roles = [];
         foreach ($this->roles as $role) {
-            $roles[$role->id] = ['role' => $role->role];
+            $roles[$role->role] = true;
         }
         return $roles;
+    }
+
+    /**
+     * Find out if given role is already assign to the user
+     * @param $role
+     * @return mixed
+     */
+    public function isRoleAssigned($role)
+    {
+        return $this->roles->contains('role', $role->role);
+    }
+
+    /**
+     * Assign a role to the user
+     * @param $id
+     * @return bool
+     */
+    public function addRole($id)
+    {
+        $role = \Nucleus\Models\Role::find($id);
+        if ($role->role == "guest") {
+            // Do not assign guest role
+            return false;
+        }
+        if (is_null($role)) {
+            return false;
+        }
+        if (!$this->isRoleAssigned($role)) {
+            $this->roles()->attach($role);
+            $this->load('roles');
+        }
+        return true;
+    }
+
+    /**
+     * Remove a role from the user
+     * @param $id
+     * @return bool
+     */
+    public function removeRole($id)
+    {
+        $role = \Nucleus\Models\Role::find($id);
+        if ($role->role == "guest") {
+            // Do not do anything with guest role
+            return true;
+        }
+        if (is_null($role)) {
+            return false;
+        }
+        $this->roles()->detach($role);
+        $this->load('roles');
+        return true;
     }
 
     /**
@@ -141,6 +218,21 @@ class User extends Model
             return $this->container->jwt::encode($payload, $key, 'HS256');
         } catch (Exception $e) {
             return false;
+        }
+    }
+
+    /**
+     * Destroy the token and session for logged in user
+     */
+    public function logout()
+    {
+        if (!is_null($this->token)) {
+            $this->token->delete();
+        }
+        if (isset($_SESSION['uuid'])) {
+            unset($_SESSION['uuid']);
+            session_destroy();
+            setcookie('token', '', time() - 3600, '/', getenv('DOMAIN'));
         }
     }
 }

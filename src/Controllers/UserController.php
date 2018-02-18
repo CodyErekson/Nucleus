@@ -87,11 +87,7 @@ class UserController extends BaseController
      */
     public function logout($request, $response, $args)
     {
-        $this->container['debug.log']->debug($this->container->token->context->user->uuid);
-        $uuid = $this->token->context->user->uuid;
-        $tm = $this->container->token_manager;
-        $tm->setUserId($uuid);
-        $tm->flush();
+        $this->container->user_manager->logout();
         return $response->withStatus(200);
     }
 

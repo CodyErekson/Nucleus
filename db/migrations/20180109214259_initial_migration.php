@@ -30,7 +30,8 @@ class InitialMigration extends AbstractMigration
 			->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
 			->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
 			->addColumn('expiration', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
-			->addForeignKey('uuid', 'users', 'uuid', ['delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION'])
+            ->addIndex(['uuid'], ['unique' => true])
+			->addForeignKey('uuid', 'users', 'uuid', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
 			->create();
 
 		$table = $this->table('roles');
@@ -55,8 +56,9 @@ class InitialMigration extends AbstractMigration
 		$table =$this->table('role_user');
 		$table->addColumn('user_uuid', 'string')
 			->addColumn('role_id', 'integer')
+            ->addIndex(['user_uuid', 'role_id'], ['unique' => true])
 			->addForeignKey('user_uuid', 'users', 'uuid', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
-			->addForeignKey('role_id', 'roles', 'id', ['delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION'])
+			->addForeignKey('role_id', 'roles', 'id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
 			->create();
     }
 }

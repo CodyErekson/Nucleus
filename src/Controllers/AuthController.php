@@ -89,7 +89,7 @@ class AuthController extends BaseController
                 ->where('active', true)->first();
             $this->container->user_manager->login($user->uuid);
         } catch (\Exception $e) {
-            $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
+            $this->container['error.log']->error(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
             return $response->withRedirect($this->container->router->pathFor('auth.login'));
         }
 

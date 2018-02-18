@@ -50,6 +50,18 @@ class UserManager
     }
 
     /**
+     * Check if user is an admin
+     * @return bool
+     */
+    public function adminCheck()
+    {
+        if (!$this->check()) {
+            return false;
+        }
+        return $this->container->user_manager->currentUser()->getAdmin();
+    }
+
+    /**
      * Assign a UUID to a user
      * @param $uuid
      */
@@ -65,13 +77,23 @@ class UserManager
      */
     public function createUserValidation($request)
     {
-        $validation = $this->container->validator->validate($request, [
-            'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable(),
-            'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable(),
-            'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
-            'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
-                ->confirmPassword($request->getParam('password')),
-        ]);
+        if (is_array($request)) {
+            $validation = $this->container->validator->validateArray($request, [
+                'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable(),
+                'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable(),
+                'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
+                    ->confirmPassword($request['password']),
+            ]);
+        } else {
+            $validation = $this->container->validator->validate($request, [
+                'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable(),
+                'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable(),
+                'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
+                    ->confirmPassword($request->getParam('password')),
+            ]);
+        }
 
         if ($validation->failed()) {
             return false;
@@ -86,17 +108,27 @@ class UserManager
      */
     public function createUser($request)
     {
-        $user = User::create([
-            'uuid' => $this->container->uuid->toString(),
-            'username' => $request->getParam('username'),
-            'email' => $request->getParam('email'),
-            'password' => password_hash($request->getParam('password'), PASSWORD_BCRYPT)
-        ]);
+        if (is_array($request)) {
+            $user = User::create([
+                'uuid' => $this->container->uuid->toString(),
+                'username' => $request['username'],
+                'email' => $request['email'],
+                'password' => password_hash($request['password'], PASSWORD_BCRYPT)
+            ]);
+        } else {
+            $user = User::create([
+                'uuid' => $this->container->uuid->toString(),
+                'username' => $request->getParam('username'),
+                'email' => $request->getParam('email'),
+                'password' => password_hash($request->getParam('password'), PASSWORD_BCRYPT)
+            ]);
+        }
 
         $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nNew user: ", $user->toArray());
 
-        $role = \Nucleus\Models\Role::find('2');
-        $user->roles()->save($role);
+        $role = \Nucleus\Models\Role::where("role", "=", "member")->first();
+        $user->addRole($role->id);
+
         return $user;
     }
 
@@ -108,10 +140,17 @@ class UserManager
      */
     public function updateUserValidation($request, $uuid)
     {
-        $validation = $this->container->validator->validate($request, [
-            'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
-            'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
-        ]);
+        if (is_array($request)) {
+            $validation = $this->container->validator->validateArray($request, [
+                'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
+                'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
+            ]);
+        } else {
+            $validation = $this->container->validator->validate($request, [
+                'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
+                'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
+            ]);
+        }
 
         if ($validation->failed()) {
             return false;
@@ -127,13 +166,23 @@ class UserManager
      */
     public function updateUserValidationAdmin($request, $uuid)
     {
-        $validation = $this->container->validator->validate($request, [
-            'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
-            'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
-            'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
-            'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
-                ->confirmPassword($request->getParam('password')),
-        ]);
+        if (is_array($request)) {
+            $validation = $this->container->validator->validateArray($request, [
+                'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
+                'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
+                'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
+                    ->confirmPassword($request['password']),
+            ]);
+        } else {
+            $validation = $this->container->validator->validate($request, [
+                'username' => v::notEmpty()->length(4, 20)->stringType()->alnum()->usernameAvailable($uuid),
+                'email' => v::notEmpty()->noWhitespace()->email()->emailAvailable($uuid),
+                'password' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
+                    ->confirmPassword($request->getParam('password')),
+            ]);
+        }
 
         if ($validation->failed()) {
             return false;
@@ -157,19 +206,68 @@ class UserManager
     }
 
     /**
+     * Change the password for the given user, assume that validation has already occurred
+     * @param $password
+     * @param $uuid
+     * @return mixed
+     */
+    public function changePassword($password, $uuid)
+    {
+        $data['password'] = password_hash($password, PASSWORD_BCRYPT);
+        return $this->updateUser($data, $uuid);
+    }
+
+    /**
      * Validate submitted password
      * @param $request
      * @return bool
      */
     public function changePasswordValidation($request)
     {
-        $validation = $this->container->validator->validate($request, [
-            'current' => v::notEmpty()->length(8)->noWhitespace()
-                ->passwordCheck(false, $_SESSION['uuid']),
-            'password' => v::notEmpty()->length(8)->noWhitespace(),
-            'confirm' => v::notEmpty()->length(8)->noWhitespace()
-                ->confirmPassword($request->getParam('password')),
-        ]);
+        if (is_array($request)) {
+            $validation = $this->container->validator->validateArray($request, [
+                'current' => v::notEmpty()->length(8)->noWhitespace()
+                    ->passwordCheck(false, $_SESSION['uuid']),
+                'password' => v::notEmpty()->length(8)->noWhitespace(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()
+                    ->confirmPassword($request['password']),
+            ]);
+        } else {
+            $validation = $this->container->validator->validate($request, [
+                'current' => v::notEmpty()->length(8)->noWhitespace()
+                    ->passwordCheck(false, $_SESSION['uuid']),
+                'password' => v::notEmpty()->length(8)->noWhitespace(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()
+                    ->confirmPassword($request->getParam('password')),
+            ]);
+        }
+
+        if ($validation->failed()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validate submitted password without providing current
+     * @param $request
+     * @return bool
+     */
+    public function changePasswordValidationAdmin($request)
+    {
+        if (is_array($request)) {
+            $validation = $this->container->validator->validateArray($request, [
+                'password' => v::notEmpty()->length(8)->noWhitespace(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()
+                    ->confirmPassword($request['password']),
+            ]);
+        } else {
+            $validation = $this->container->validator->validate($request, [
+                'password' => v::notEmpty()->length(8)->noWhitespace(),
+                'confirm' => v::notEmpty()->length(8)->noWhitespace()
+                    ->confirmPassword($request->getParam('password')),
+            ]);
+        }
 
         if ($validation->failed()) {
             return false;
@@ -214,11 +312,7 @@ class UserManager
      */
     public function logout()
     {
-        if (isset($_SESSION['uuid'])) {
-            unset($_SESSION['uuid']);
-            session_destroy();
-            setcookie('token', '', time() - 3600, '/', getenv('DOMAIN'));
-        }
+        $this->currentUser()->logout();
     }
 
     /**
@@ -231,7 +325,6 @@ class UserManager
     {
         $user = \Nucleus\Models\User::find($uuid);
         $user->setActive($state);
-        $user->save();
         return $user;
     }
 

@@ -18,6 +18,11 @@ if (PHP_SAPI == 'cli-server') {
 }
 
 /**
+ * Include definitions
+ */
+require(__DIR__ . '/definitions.php');
+
+/**
  * Include dependencies via Composer
  */
 require(__DIR__ . '/../vendor/autoload.php');
@@ -25,7 +30,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 /**
  * Fetch our global functions
  */
-require(__DIR__ . '/../src/functions.php');
+require(__DIR__ . '/functions.php');
 
 /**
  * Start a session -- though not used when authenticating with JWT, it is needed for general user authentication
@@ -43,13 +48,13 @@ putenv("SRC_ROOT=" . __DIR__);
 /**
  * Instantiate Slim framework app
  */
-$settings = require(__DIR__ . '/../src/settings.php');
+$settings = require(__DIR__ . '/settings.php');
 $app = new \Slim\App($settings);
 
 /**
  * Set up dependencies
  */
-require(__DIR__ . '/../src/dependencies.php');
+require(__DIR__ . '/dependencies.php');
 
 /**
  * Get contents of composer.json in case we need it
@@ -75,12 +80,12 @@ if ($container->db->schema()->hasTable('settings')) {
 /**
  * Register middleware
  */
-require(__DIR__ . '/../src/middleware.php');
+require(__DIR__ . '/middleware.php');
 
 /**
  * Register routes
  */
-require(__DIR__ . '/../src/routes.php');
+require(__DIR__ . '/routes.php');
 
 /**
  * Initialize the application

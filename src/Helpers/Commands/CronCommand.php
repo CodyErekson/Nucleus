@@ -10,6 +10,7 @@ class CronCommand extends BaseCommand
      */
     public function command($arguments)
     {
+        // Define arguments
         $this->cli->arguments->add([
             'command' => [
                 'prefix' => 'c',

@@ -154,6 +154,14 @@ $container['jwt'] = function () {
 };
 
 /**
+ * Guzzle HTTP client
+ * @return \GuzzleHttp\Client
+ */
+$container['http_client'] = function () {
+    return new GuzzleHttp\Client();
+};
+
+/**
  * UUID generator
  * @return \Ramsey\Uuid\UuidInterface
  */

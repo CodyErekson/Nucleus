@@ -27,6 +27,13 @@ $container['user_manager'] = function ($c) {
     return new \Nucleus\Helpers\UserManager($c);
 };
 
+/**
+ * Manage background processes
+ */
+$container['background_process'] = $container->factory(function ($c) {
+    return new \Nucleus\Helpers\BackgroundProcess();
+});
+
 /* Components */
 
 /**

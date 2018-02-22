@@ -15,7 +15,7 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     "cookie" => "token",
     "attribute" => "jwt",
     "path" => ["/"],
-    "passthrough" => ["/api/user/login/"],
+    "passthrough" => ["/", "/api/user/login/", "/auth/login"],
     "algorithm" => 'HS256',
     "relaxed" => ["localhost", getenv('DOMAIN')],
     "rules" => [

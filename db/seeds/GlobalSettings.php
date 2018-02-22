@@ -22,10 +22,6 @@ class GlobalSettings extends AbstractSeed
                 "env" => 1
             ],
             [
-                "setting" => "NETSUITE_RECORDS_THRESHOLD",
-                "value" => 95
-            ],
-            [
                 "setting" => "IP_WHITELIST",
                 "value" => "192.168.1.1",
                 "allow_null" => true

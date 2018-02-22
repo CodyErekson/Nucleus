@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PHP_BINARY="${PHP_BINARY:-/usr/bin/php7}"
+PHP_BINARY="${PHP_BINARY:-/usr/bin/php}"
 DOC_ROOT="../public"
 VENDOR_PATH="../vendor"
 

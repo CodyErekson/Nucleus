@@ -60,9 +60,6 @@ $app->group('', function () {
 // User routes
 $app->group('', function () {
 
-    $this->get('/ns/test/', 'NetsuiteController:test');
-    $this->get('/ns/savedSearch/{id}/', 'NetsuiteController:savedSearch');
-
     // Authorization stuff
     $this->get('/auth/logout/', 'AuthController:getLogout')->setName('auth.logout');
 
@@ -75,30 +72,32 @@ $app->group('', function () {
     $this->post('/auth/user/password/', 'AuthController:postPasswordChange');
 })->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
-// Admin  ACP routes
-$app->group('/acp', function () {
+// Admin dashboard routes
+$app->group('/d', function () {
 
     // Dashboard page
-    $this->get('/', 'AcpController:getDashboard')->setName('acp.dashboard');
-    $this->get('/dashboard/', 'AcpController:getDashboard')->setName('acp.dashboard');
+    $this->get('/', 'DashboardController:getDashboard')->setName('dashboard');
+    $this->get('/dashboard/', 'DashboardController:getDashboard')->setName('dashboard');
 
-    $this->post('/', 'AcpController:postDashboard');
+    $this->post('/', 'DashboardController:postDashboard');
 
     // Global settings page
-    $this->get('/settings/', 'AcpController:getSettings')->setName('acp.settings');
+    $this->get('/settings/', 'DashboardController:getSettings')->setName('dashboard.settings');
 
-    $this->post('/settings/', 'AcpController:postSettings');
+    $this->post('/settings/', 'DashboardController:postSettings');
 
     // User management pages
-    $this->get('/users/', 'AcpController:getUsers')->setName('acp.users');
+    $this->get('/users/', 'DashboardController:getUsers')->setName('dashboard.users');
 
-    $this->get('/user/{uuid}/', 'AcpController:getUser')->setName('acp.user');
+    $this->post('/user/create/', 'DashboardController:createUser')->setName('dashboard.user.create');
 
-    $this->post('/user/{uuid}/', 'AcpController:postUser');
+    $this->get('/user/{uuid}/', 'DashboardController:getUser')->setName('dashboard.user');
 
-    $this->post('/user/{uuid}/password/', 'AcpController:postUserPassword')->setName('acp.user.password');
+    $this->post('/user/{uuid}/', 'DashboardController:postUser');
 
-    //$this->post('/settings/', 'AcpController:postSettings');
+    $this->post('/user/{uuid}/password/', 'DashboardController:postUserPassword')->setName('dashboard.user.password');
+
+
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 

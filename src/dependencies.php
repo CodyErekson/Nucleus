@@ -245,3 +245,13 @@ $container['AuthController'] = function ($c) {
     $controller = new \Nucleus\Controllers\AuthController($c);
     return $controller;
 };
+
+/**
+ * Controller for admin dashboard routes
+ * @param $c
+ * @return \Nucleus\Controllers\DashboardController
+ */
+$container['DashboardController'] = function ($c) {
+    $controller = new \Nucleus\Controllers\DashboardController($c);
+    return $controller;
+};

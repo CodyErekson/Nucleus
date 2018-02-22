@@ -58,7 +58,7 @@ class Setting extends Model
      * Define env value
      * @param boolean $val
      */
-    public function setEnv(boolean $val)
+    public function setEnv(bool $val)
     {
         $this->env = $val;
         $this->save();

@@ -227,7 +227,7 @@ class UserController extends BaseController
     {
         $uuid = $args['uuid'];
 
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDelete user:", $uuid);
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDelete user:" . $uuid);
 
         if ($this->container->user_manager->deleteUser($uuid)) {
             return $response->withStatus(200);

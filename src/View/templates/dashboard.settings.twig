@@ -1,0 +1,79 @@
+{% extends "skeleton/page.twig" %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Global Settings</div>
+                        <div class="panel-body">
+
+                            <form action="{{ path_for('dashboard.settings') }}" method="post">
+                                {% for id,setting in settings %}
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group{{ errors[id+1].setting ? ' has-error' : '' }}">
+                                                <label for="{{ setting.id }}[setting]">Setting</label>
+                                                <input type="text" name="{{ setting.id }}[setting]"
+                                                       id="{{ setting.id }}[setting]"
+                                                       class="form-control border-input" placeholder="Setting"
+                                                       value="{% if old[id].setting %}{{ old[id].setting }}{% else %}{{ setting.setting }}{% endif %}">
+                                                {% if errors[id+1].setting %}
+                                                    <span class="help-block">{{ errors[id+1].setting | first }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group{{ errors[id+1].value ? ' has-error' : '' }}">
+                                                <label for="{{ setting.id }}[value]">Value</label>
+                                                <input type="text" name="{{ setting.id }}[value]"
+                                                       id="{{ setting.id }}[value]"
+                                                       class="form-control border-input" placeholder="Value"
+                                                       value="{% if old[id].value %}{{ old[id].value }}{% else %}{{ setting.value }}{% endif %}">
+                                                {% if errors[id+1].value %}
+                                                    <span class="help-block">{{ errors[id+1].value | first }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group{{ errors[id+1].env ? ' has-error' : '' }}">
+                                                <div class="row text-center">
+                                                    <label for="{{ setting.id }}[env]">Add to ENV? </label>
+                                                </div>
+                                                <div class="row text-center">
+                                                    <input type="checkbox" name="{{ setting.id }}[env]"
+                                                           id="{{ setting.id }}[env]"
+                                                           {% if old[id].env %}checked="checked" value="{{ old[id].env }}"{% else %}
+                                                        {% if setting.env %}
+                                                            checked="checked" value="true"
+                                                        {% endif %}
+                                                            {% endif %}
+                                                    >
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                {% if errors[id+1].env %}
+                                                    <span class="help-block">{{ errors[id+1].env | first }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="text-center">
+                                    <a role="button" class="btn btn-info btn-fill btn-wd" href="{{ path_for('dashboard') }}">Cancel</a>
+                                    <button type="submit" class="btn btn-info btn-fill btn-wd">Save</button>
+                                </div>
+                                <div class="clearfix"></div>
+                                {{  csrf.field | raw }}
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

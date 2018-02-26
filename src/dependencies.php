@@ -162,6 +162,20 @@ $container['http_client'] = function () {
 };
 
 /**
+ * Email transport handler
+ * @return Swift_Mailer
+ */
+$container['mailer'] = function () {
+    // Sendmail
+    $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -bs');
+    return new Swift_Mailer($transport);
+};
+
+$container['email'] = function () {
+    return new Swift_Message();
+};
+
+/**
  * UUID generator
  * @return \Ramsey\Uuid\UuidInterface
  */

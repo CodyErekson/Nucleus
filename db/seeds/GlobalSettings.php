@@ -19,7 +19,7 @@ class GlobalSettings extends AbstractSeed
             [
                 "setting" => "TIMEZONE",
                 "value" => (date_default_timezone_get() == "UTC") ? "America/Denver" : date_default_timezone_get(),
-                "env" => 1
+                "env" => true
             ],
             [
                 "setting" => "IP_WHITELIST",
@@ -30,6 +30,16 @@ class GlobalSettings extends AbstractSeed
                 "setting" => "IP_BLACKLIST",
                 "value" => "",
                 "allow_null" => true
+            ],
+            [
+                "setting" => "VALIDATE_NEW_ACCOUNT",
+                "value" => false,
+                "env" => true
+            ],
+            [
+                "setting" => "APP_EMAIL_ADDRESS",
+                "value" =>  "nucleus@nucleus.com",
+                "env" => true
             ]
         ];
         $table = $this->table('settings');

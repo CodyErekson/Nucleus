@@ -14,7 +14,6 @@ class CsrfMiddleware extends BaseMiddleware
 
     public function __invoke($request, $response, $next)
     {
-
         $this->container->view->getEnvironment()->addGlobal('csrf', [
             'field' => '
 				<input type="hidden" name="' . $this->container->csrf

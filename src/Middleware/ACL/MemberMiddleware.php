@@ -16,6 +16,8 @@ class MemberMiddleware extends BaseMiddleware
 
     public function __invoke($request, $response, $next)
     {
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n"); // .
+        //   $this->container['token']);
 
         if (!$this->container->user_manager->check()) {
             $this->container->flash->addMessage('error', 'Please login before proceeding.');
@@ -27,6 +29,7 @@ class MemberMiddleware extends BaseMiddleware
             }
         }
 
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n");
         $this->container->view->getEnvironment()->addGlobal(
             'auth',
             [

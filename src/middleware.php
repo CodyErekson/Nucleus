@@ -3,9 +3,6 @@
  * Define application middleware. Required by bootstrap.php
  */
 
-// CLI runner middleware
-$app->add(\adrianfalleiro\SlimCLIRunner::class);
-
 /**
  * Configure JSON Web Token handling
  */
@@ -15,11 +12,19 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     "cookie" => "token",
     "attribute" => "jwt",
     "path" => ["/"],
-    "passthrough" => ["/", "/api/user/login/", "/auth/login"],
+    "passthrough" => ["/favicon.ico"],  //WTH? This shouldn't need to be here
     "algorithm" => 'HS256',
     "relaxed" => ["localhost", getenv('DOMAIN')],
     "rules" => [
-        new \Nucleus\Helpers\RequestSessionRule($container)
+        new \Nucleus\Helpers\RequestSessionRule($container,
+            [
+                "/",
+                "/api/user/login/",
+                "/auth/login/",
+                "/auth/signup/",
+                "/api/user/{uuid}/reset/"
+            ]),
+        new \Slim\Middleware\JwtAuthentication\RequestPathRule()
     ],
     "callback" => function ($request, $response, $arguments) use ($container) {
         $container['token'] = $arguments["decoded"];
@@ -39,7 +44,7 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     "error" => function ($request, $response, $arguments) use ($container) {
         $data["status"] = "error";
         $data["message"] = $arguments["message"];
-        $container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDid not find valid token");
+        $container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n" . $data["message"]);
         return $response
             ->withHeader("Content-Type", "application/json")
             ->withStatus(401)

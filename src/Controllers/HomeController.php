@@ -20,7 +20,7 @@ class HomeController extends BaseController
     public function home($request, $response, $args)
     {
         if (!$this->container->user_manager->check()) {
-            return $response->withRedirect($this->container->router->pathFor('auth.login'));
+            //return $response->withRedirect($this->container->router->pathFor('auth.login'));
         }
         /*$roles = Role::where('id', '3')->first();
         foreach($roles->users as $role){

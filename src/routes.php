@@ -55,6 +55,7 @@ $app->group('', function () {
     $this->get('/auth/login/', 'AuthController:getLogin')->setName('auth.login');
 
     $this->post('/auth/login/', 'AuthController:postLogin');
+
 })->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
@@ -70,6 +71,7 @@ $app->group('', function () {
     $this->get('/auth/user/password/', 'AuthController:getPasswordChange')->setName('auth.user.password');
 
     $this->post('/auth/user/password/', 'AuthController:postPasswordChange');
+
 })->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // Admin dashboard routes
@@ -105,23 +107,35 @@ $app->group('/d', function () {
  * API routes -- output JSON
  */
 
-// Admin routes
-$app->group('', function () {
+// User routes
+$app->group('/api', function () {
 
-    $this->post('/api/user/', 'UserController:createUser');
+    $this->post('/user/logout/', 'UserController:logout');
+
+})->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
+
+//$app->get('/api/user/reset/', 'UserController:getResetCode');
+
+// Admin routes
+$app->group('/api', function () {
+
+    $this->post('/user/', 'UserController:createUser');
 
     //remember to include header X-Http-Method-Override:PUT, actually use POST
-    $this->put('/api/user/{uuid}/', 'UserController:updateUser');
+    $this->put('/user/{uuid}/', 'UserController:updateUser');
 
-    $this->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
+    $this->put('/user/{uuid}/deactivate/', 'UserController:deactivateUser');
 
-    $this->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
+    $this->put('/user/{uuid}/activate/', 'UserController:activateUser');
 
-    $this->delete('/api/user/{uuid}/', 'UserController:deleteUser')->setName('api.user.delete');
+    $this->delete('/user/{uuid}/', 'UserController:deleteUser')->setName('api.user.delete');
 
-    $this->get('/api/user/', 'UserController:getUsers');
+    $this->get('/user/', 'UserController:getUsers');
 
-    $this->get('/api/user/{uuid}/', 'UserController:getUser');
+    $this->get('/user/{uuid}/', 'UserController:getUser');
+
+    //$this->get('/user/reset/{uuid}/', 'UserController:getResetCode');
+
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 
@@ -129,5 +143,4 @@ $app->group('', function () {
 // TODO -- apply ACL rules
 $app->post('/api/user/login/', 'UserController:login');
 
-$app->post('/api/user/logout/', 'UserController:logout')
-    ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
+$app->get('/api/user/{uuid}/reset/', 'UserController:getResetCode');

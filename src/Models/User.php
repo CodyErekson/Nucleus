@@ -41,6 +41,14 @@ class User extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function reset_code()
+    {
+        return $this->hasOne('\Nucleus\Models\ResetCode', 'uuid');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles()
@@ -219,6 +227,79 @@ class User extends Model
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Get the user's reset code, or have a new one made
+     * @return bool|mixed
+     */
+    public function getResetCode()
+    {
+        if (( is_null($this->reset_code) ) || ( !$this->reset_code->isValid() )) {
+            //we need to create a new reset code
+            $code = $this->createResetCode();
+            if (!$code) {
+                return false;
+            } else {
+                if (is_null($this->reset_code)) {
+                    $this->reset_code = ResetCode::create([
+                        'uuid' => $this->uuid,
+                        'code' => $code,
+                        'expiration' => date('Y-m-d H:i:s', time() + (3600 * 24 * 2))
+                    ]);
+                } else {
+                    $this->reset_code->updateCode($code);
+                }
+            }
+        }
+        return $this->reset_code;
+    }
+
+    /**
+     * Generate and return a new reset code
+     * @return bool|string
+     */
+    public function createResetCode()
+    {
+        try {
+            return base64_encode(random_bytes(16));
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * See if user's reset code is expired
+     * @return boolean
+     */
+    public function checkResetCode()
+    {
+        return $this->reset_code()->isValid();
+    }
+
+    /**
+     * Email the user their reset code
+     * @return boolean|mixed
+     */
+    public function sendResetCode()
+    {
+        if ( is_null($this->container) ){
+            //we don't have a container, therefore no mail handler
+            return false;
+        }
+        $code = $this->getResetCode()->getCode();
+
+        // TODO -- email reset code
+
+        $mailer = $this->container->mailer;
+
+        $message = $this->container->email;
+        $message->setSubject('Temporary access key for ' . getenv('NAME'))
+            ->setFrom([getenv('APP_EMAIL_ADDRESS') => getenv('NAME')])
+            ->setTo([$this->email])
+            ->setBody("Your temporary access key is " . $code); //TODO -- figure out email templates
+
+        return $mailer->send($message);
     }
 
     /**

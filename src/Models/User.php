@@ -289,8 +289,6 @@ class User extends Model
         }
         $code = $this->getResetCode()->getCode();
 
-        // TODO -- email reset code
-
         $mailer = $this->container->mailer;
 
         $message = $this->container->email;

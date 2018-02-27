@@ -31,10 +31,10 @@ class UserController extends BaseController
      * Login a user with username/password, used to fetch a user's JSON Web Token
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function login($request, $response, $args)
+    public function login($request, $response, $arguments)
     {
         $data = $request->getParsedBody();
 
@@ -82,23 +82,75 @@ class UserController extends BaseController
      * Destroy current session and JSON Web Token
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function logout($request, $response, $args)
+    public function logout($request, $response, $arguments)
     {
         $this->container->user_manager->logout();
         return $response->withStatus(200);
     }
 
     /**
+     * Get a given user's password reset code
+     * @param $request
+     * @param $response
+     * @param $arguments
+     * @return mixed
+     */
+    public function getResetCode($request, $response, $arguments)
+    {
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nFetching reset code");
+
+        $res = $response->withHeader("Content-Type", "application/json");
+
+        if ( (!isset($arguments['uuid'])) || (empty($arguments['uuid'])) ){
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Must provide a uuid"]));
+            return $res;
+        }
+
+        $uuid = $arguments['uuid'];
+
+        $user = \Nucleus\Models\User::find($uuid);
+
+        // Return code if current user is an admin
+        if ( ($this->container->user_manager->check())
+            &&
+            ($this->container->user_manager->currentUser()->getAdmin()) ){
+            try {
+                $code = $user->getResetCode();
+            } catch (\Illuminate\Database\QueryException $e) {
+                $res = $res->withStatus(400);
+                $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+                return $res;
+            }
+
+            return $res->withStatus(201)->getBody()->write(json_encode(["code" => $code->getCode()]));
+        }
+
+        // Email the code to the user
+        if ( is_null($user->container)) {
+            $user->setContainer($this->container);
+        }
+        try {
+            $result = $user->sendResetCode();
+        } catch (\Exception $e){
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+            return $res;
+        }
+        return $res->withStatus(201)->getBody()->write(json_encode(["status" => (bool)$result]));
+    }
+
+    /**
      * Return an array of all users in the database
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return collection
      */
-    public function getUsers($request, $response, $args)
+    public function getUsers($request, $response, $arguments)
     {
         return $response->getBody()->write(\Nucleus\Models\User::all()->toJson());
     }
@@ -107,12 +159,12 @@ class UserController extends BaseController
      * Fetch User object for given user as identified by UUID
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return User
      */
-    public function getUser($request, $response, $args)
+    public function getUser($request, $response, $arguments)
     {
-        $uuid = $args['uuid'];
+        $uuid = $arguments['uuid'];
         $dev = \Nucleus\Models\User::find($uuid);
         $response->getBody()->write($dev);
         return $response;
@@ -122,10 +174,10 @@ class UserController extends BaseController
      * Create a new user
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function createUser($request, $response, $args)
+    public function createUser($request, $response, $arguments)
     {
         $this->container['debug.log']->debug(
             __FILE__ . " on line " . __LINE__ . "\nCreate user payload:",
@@ -155,17 +207,17 @@ class UserController extends BaseController
      * Update given user as identified by UUID
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function updateUser($request, $response, $args)
+    public function updateUser($request, $response, $arguments)
     {
         $this->container['debug.log']->debug(
             __FILE__ . " on line " . __LINE__ . "\nUpdate user payload:",
             $request->getParsedBody()
         );
 
-        $uuid = $args['uuid'];
+        $uuid = $arguments['uuid'];
         $data = $request->getParsedBody();
 
         if (!$this->container->user_manager->updateUserValidationAdmin($request, $uuid)) {
@@ -184,12 +236,12 @@ class UserController extends BaseController
      * Disable given user as identified by UUID
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function deactivateUser($request, $response, $args)
+    public function deactivateUser($request, $response, $arguments)
     {
-        $uuid = $args['uuid'];
+        $uuid = $arguments['uuid'];
 
         $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDeactivate user:", [$uuid]);
 
@@ -202,12 +254,12 @@ class UserController extends BaseController
      * Enable given user as identified by UUID
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function activateUser($request, $response, $args)
+    public function activateUser($request, $response, $arguments)
     {
-        $uuid = $args['uuid'];
+        $uuid = $arguments['uuid'];
 
         $user = $this->container->user_manager->setActive($uuid, true);
 
@@ -220,12 +272,12 @@ class UserController extends BaseController
      * Entirely destroy given user as identified by UUID
      * @param $request
      * @param $response
-     * @param $args
+     * @param $arguments
      * @return mixed
      */
-    public function deleteUser($request, $response, $args)
+    public function deleteUser($request, $response, $arguments)
     {
-        $uuid = $args['uuid'];
+        $uuid = $arguments['uuid'];
 
         $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nDelete user:" . $uuid);
 

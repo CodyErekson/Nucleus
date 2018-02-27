@@ -127,6 +127,10 @@
                                     </div>
                                 </div>
                                 <div class="row text-center form-button-row">
+                                    <button type="button" id="send-reset-code" class="btn btn-success btn-fill btn-wd"
+                                            title="Delete User" data-uuid="{{ user.uuid }}">
+                                        <i class="ti-email"></i> Send Reset Code
+                                    </button>
                                     <a role="button" class="btn btn-info btn-fill btn-wd" href="{{ path_for('dashboard.users') }}">Cancel</a>
                                     <button type="submit" class="btn btn-info btn-fill btn-wd">Save</button>
                                 </div>
@@ -141,3 +145,83 @@
         </div>
     </div>
 {% endblock %}
+
+{% block modal %}
+    <!-- Modals -->
+    <div class="modal fade" id="send-done" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="ti-close"></i></span>
+                    </button>
+                    <h4 class="modal-title">Reset Code Sent</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-error">Reset code was sent to {{ user.email }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info btn-fill" data-dismiss="modal">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="send-error" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="ti-close"></i></span>
+                    </button>
+                    <h4 class="modal-title">Reset Code Error</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-error"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info btn-fill" data-dismiss="modal">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock modal %}
+
+{% block pagescripts %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#send-reset-code').on('click', function(){
+				var uuid = $(this).data('uuid');
+				var route = '{{ path_for('api.user.reset.send', { 'uuid': 'uuid'}) }}';
+				var url = route.replace('uuid', uuid);
+				var token = $.cookie('token');
+
+				$.ajax({
+					url: url,
+					type: 'get',
+					beforeSend: function (request) {
+						request.setRequestHeader("Authorization", "Bearer " + token);
+					}
+				})
+					.done(function (data, textStatus, xhr) {
+						if (xhr.status == 200) {
+							var modal = $('#send-done').modal();
+							modal.show();
+						}
+					})
+					.fail(function (xhr) {
+						var ct = xhr.getResponseHeader("content-type") || "";
+						var modal = $('#send-error').modal();
+						if ( ct.indexOf('json') > -1 ){
+							modal.find('.modal-error').text(xhr.responseJSON.errors);
+						} else {
+							modal.find('.modal-error').text(xhr);
+						}
+						modal.show();
+					})
+			})
+
+		});
+    </script>
+{% endblock pagescripts %}

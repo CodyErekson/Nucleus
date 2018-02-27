@@ -134,7 +134,7 @@ $app->group('/api', function () {
 
     $this->get('/user/{uuid}/', 'UserController:getUser');
 
-    $this->get('/user/{uuid}/reset/send/', 'UserController:sendResetCode');
+    $this->get('/user/{uuid}/reset/send/', 'UserController:sendResetCode')->setName('api.user.reset.send');
 
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));

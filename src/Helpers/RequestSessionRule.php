@@ -93,8 +93,11 @@ class RequestSessionRule implements \Slim\Middleware\JwtAuthentication\RuleInter
             preg_match_all("/{(.*?)}/", $passthrough, $matches);
             foreach($matches[1] as $match) {
                 if (strpos($passthrough, "{" . $match . "}") !== false) {
-                    $uuid = $request->getAttribute('route')->getArgument($match);
-                    $passthrough = str_replace("{" . $match . "}", $uuid, $passthrough);
+                    $route = $request->getAttribute('route');
+                    if ( !is_null($route) ) {
+                        $arg = $route->getArgument($match);
+                        $passthrough = str_replace("{" . $match . "}", $arg, $passthrough);
+                    }
                 }
             }
             $this->container['debug.log']->debug("Compare URI " . $uri . " to passthrough " . $passthrough);

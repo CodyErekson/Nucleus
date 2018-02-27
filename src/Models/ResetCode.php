@@ -23,11 +23,11 @@ class ResetCode extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
-        return $this->hasOne('\Nucleus\Models\User', 'uuid');
+        return $this->belongsTo('\Nucleus\Models\User', 'uuid');
     }
 
     /**

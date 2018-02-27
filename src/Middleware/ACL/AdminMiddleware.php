@@ -16,7 +16,6 @@ class AdminMiddleware extends BaseMiddleware
 
     public function __invoke($request, $response, $next)
     {
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n");
         // We know user is logged in now, just find out if they are an admin
         if ($this->container->user_manager->currentUser()->getAdmin()) {
             $response = $next($request, $response);

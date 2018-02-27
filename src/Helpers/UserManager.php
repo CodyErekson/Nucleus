@@ -276,7 +276,29 @@ class UserManager
     }
 
     /**
-     * Valid supplied user login credentials
+     * Validate supplied password reset data
+     * @param $request
+     * @return bool
+     */
+    public function resetCodeValidation($request)
+    {
+        $validation = $this->container->validator->validate($request, [
+            'cpusername' => v::notEmpty()->length(4, 20)->stringType()->alnum()
+                ->usernameExists(),
+            'cpresetcode' => v::notEmpty()->resetCode($request->getParam('cpusername')),
+            'cppassword' => v::notEmpty()->length(8)->noWhitespace()->stringType(),
+            'cpconfirm' => v::notEmpty()->length(8)->noWhitespace()->stringType()
+                ->confirmPassword($request->getParam('cppassword')),
+        ]);
+
+        if ($validation->failed()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validate supplied user login credentials
      * @param $request
      * @return bool
      */
@@ -301,10 +323,14 @@ class UserManager
      */
     public function login($uuid)
     {
-        $_SESSION['uuid'] = $uuid;
-        $this->currentUser()->setContainer($this->container);
-        $token = $this->currentUser()->getToken();
-        setcookie('token', $token->token, time() + (3600 * 24 * 15), '/', getenv('DOMAIN'));
+        try {
+            $_SESSION['uuid'] = $uuid;
+            $this->currentUser()->setContainer($this->container);
+            $token = $this->currentUser()->getToken();
+            setcookie('token', $token->token, time() + (3600 * 24 * 15), '/', getenv('DOMAIN'));
+        } catch (\Exception $e){
+            $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n" . $e->getMessage());
+        }
     }
 
     /**

@@ -22,7 +22,11 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
                 "/api/user/login/",
                 "/auth/login/",
                 "/auth/signup/",
-                "/api/user/{uuid}/reset/"
+                "/auth/login/reset/",
+                "/api/user/{uuid}/reset/",
+                "/api/user/{email}/reset/email/",
+                "/api/user/{username}/reset/username/",
+                "/api/user/{username}/check/"
             ]),
         new \Slim\Middleware\JwtAuthentication\RequestPathRule()
     ],

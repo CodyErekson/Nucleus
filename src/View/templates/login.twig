@@ -31,6 +31,10 @@
                                 </div>
                             </div>
                             <div class="text-center">
+                                <button type="button" id="forgot-password" class="btn btn-success btn-wd"
+                                        title="Forgot Password">
+                                    <i class="ti-lock"></i> Forgot Password
+                                </button>
                                 <button type="submit" class="btn btn-info btn-fill btn-wd">Login</button>
                             </div>
                             <div class="clearfix"></div>
@@ -41,6 +45,255 @@
             </div>
         </div>
 
+        <div class="row{{ old.cpusername ? '' : ' hidden' }}" id="change-password">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Change Password</div>
+                    <div class="panel-body">
+
+                        <div class="alert alert-info alert-send hidden" role="alert">
+                            <p><span class="ti-info">Notice:</span>
+                            A password reset code has been emailed to your email address</p>
+                        </div>
+
+                        <form action="{{ path_for('auth.login.reset') }}" method="post">
+                            <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group{{ errors.cpusername ? ' has-error' : '' }}">
+                                    <label for="cpusername">Username</label>
+                                    <input type="text" name="cpusername" id="cpusername" class="form-control border-input"
+                                           placeholder="Username" value="{{ old.cpusername }}" disabled>
+                                    <input type="hidden" name="cpusername" id="cpusername-hidden" value="{{ old.cpusername }}"/>
+                                    {% if errors.cpusername %}
+                                        <span class="help-block">{{ errors.cpusername | first }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group{{ errors.cppassword ? ' has-error' : '' }}">
+                                    <label for="cppassword">New Password</label>
+                                    <input type="password" name="cppassword" id="cppassword" class="form-control border-input">
+                                    {% if errors.cppassword %}
+                                        <span class="help-block">{{ errors.cppassword | first }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            </div>
+                            <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group{{ errors.cpresetcode ? ' has-error' : '' }}">
+                                    <label for="cpresetcode">Reset Code</label>
+                                    <input type="text" name="cpresetcode" id="cpresetcode" class="form-control border-input"
+                                           placeholder="Reset Code" value="{{ old.cpresetcode }}">
+                                    {% if errors.cpresetcode %}
+                                        <span class="help-block">{{ errors.cpresetcode | first }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group{{ errors.cpconfirm ? ' has-error' : '' }}">
+                                    <label for="cpconfirm">Confirm Password</label>
+                                    <input type="password" name="cpconfirm" id="cpconfirm" class="form-control border-input">
+                                    {% if errors.cpconfirm %}
+                                        <span class="help-block">{{ errors.cpconfirm | first }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            </div>
+                            <div class="row">
+                            <div class="text-center">
+                                <button type="button" id="resend-code" class="btn btn-success btn-wd"
+                                        title="Forgot Password">
+                                    <i class="ti-email"></i> Resend Code
+                                </button>
+                                <button type="submit" class="btn btn-info btn-fill btn-wd">Change</button>
+                            </div>
+                            <div class="clearfix"></div>
+                            {{  csrf.field | raw }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}
+
+{% block modal %}
+    <!-- Modals -->
+    <div class="modal fade" id="get-username" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="ti-close"></i></span>
+                    </button>
+                    <h4 class="modal-title">Username Required</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-error"></p>
+                    <div class="form-group" id="newusername-input">
+                        <input type="text" name="newusername" id="newusername" class="form-control border-input"
+                               placeholder="Username">
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info btn-fill" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info btn-fill" id="username-check">Check Username</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="username-error" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="ti-close"></i></span>
+                    </button>
+                    <h4 class="modal-title">Username Check Error</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-error"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info btn-fill" data-dismiss="modal">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock modal %}
+
+{% block pagescripts %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			$("#forgot-password").on('click', function(){
+				// Find out if username field has a value; if not we need to prompt
+				var username = $("#username").val();
+				if ( username.length <= 0 ){
+                    getUsername();
+                    return;
+				}
+                checkUsername(username);
+			})
+
+            $("#username-check").on('click', function(e){
+            	var username = $("#newusername").val();
+				if ( username.length <= 0 ){
+					$("#newusername-input").addClass('has-error');
+					$("#newusername-input .help-block").text('A username is required');
+					return;
+				}
+				checkUsername(username);
+            })
+
+            $("#resend-code").on('click', function(){
+				var username = $("#cpusername").val();
+				if ( username.length <= 0 ){
+					getUsername();
+					return;
+				}
+				sendResetCode(username);
+			})
+		});
+
+		function checkUsername(username)
+        {
+			var route = '{{ path_for('api.user.username.check', { 'username': 'username'}) }}';
+			var url = route.replace('username', username);
+
+			$.ajax({
+				url: url,
+				type: 'get',
+			})
+            .done(function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                	data = JSON.parse(data);
+                	console.log(data);
+                	if ( data.status == true ) {
+						showResetCodeForm(username);
+					} else if ( data.status == false ){
+                		getUsername('The username you provided does not exist. Please try again:');
+                    } else {
+						$("#username-error").modal('hide');
+						var modal = $("#username-error").modal('show');
+						modal.find('.modal-error').text('The account associated with the username '
+                            + username + ' is disabled.');
+                    }
+                }
+            })
+            .fail(function (xhr) {
+				$("#username-error").modal('hide');
+                var ct = xhr.getResponseHeader("content-type") || "";
+                var modal = $("#username-error").modal('show');
+                if ( ct.indexOf('json') > -1 ){
+                    modal.find('.modal-error').text(xhr.responseJSON.errors);
+                } else {
+                    modal.find('.modal-error').text(xhr);
+                }
+            })
+        }
+
+		function showResetCodeForm(username)
+        {
+        	sendResetCode(username);
+			$("#get-username").modal('hide');
+        	$("#cpusername").val(username);
+        	$("#cpusername-hidden").val(username);
+            $("#change-password").removeClass('hidden').addClass('show');
+        }
+
+        function getUsername(message)
+        {
+        	message = message || 0;
+			var modal = $("#get-username").modal('show');
+			if ( message == 0 ) {
+				modal.find('.modal-error').text('Please enter your username:');
+			} else {
+				modal.find('.modal-error').text(message);
+            }
+        }
+
+        function sendResetCode(username)
+        {
+			var route = '{{ path_for('api.user.username.reset', { 'username': 'username'}) }}';
+			var url = route.replace('username', username);
+
+			$(".alert-send").removeClass('show').addClass('hidden');
+
+			$.ajax({
+				url: url,
+				type: 'get',
+			})
+            .done(function (data, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    data = JSON.parse(data);
+                    console.log(data);
+                    if ( data.status == true ) {
+						$(".alert-send").removeClass('hidden').addClass('show');
+                    } else {
+                        $('#username-error').modal('hide');
+                        var modal = $('#username-error').modal('show');
+                        modal.find('.modal-error').text('An error occurred while sending your reset code. Please contact an administrator for help.');
+                    }
+                }
+            })
+            .fail(function (xhr) {
+                $('#username-error').modal('hide');
+                var ct = xhr.getResponseHeader("content-type") || "";
+                var modal = $('#username-error').modal('show');
+                if ( ct.indexOf('json') > -1 ){
+                    modal.find('.modal-error').text(xhr.responseJSON.errors);
+                } else {
+                    modal.find('.modal-error').text(xhr);
+                }
+            })
+        }
+    </script>
+{% endblock pagescripts %}

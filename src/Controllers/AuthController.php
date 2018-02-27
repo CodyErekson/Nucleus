@@ -110,6 +110,46 @@ class AuthController extends BaseController
     }
 
     /**
+     * Validate reset code and email then create a user session and JWT token
+     * @param $request
+     * @param $response
+     * @return mixed
+     */
+    public function postLoginReset($request, $response)
+    {
+        $this->container['debug.log']->debug(
+            __FILE__ . " on line " . __LINE__ . "\nReset password payload:",
+            $request->getParsedBody()
+        );
+
+        if (!$this->container->user_manager->resetCodeValidation($request)) {
+            return $response->withRedirect($this->container->router->pathFor('auth.login'));
+        }
+
+        try {
+            $user = \Nucleus\Models\User::where('username', $request->getParam('cpusername'))
+                ->where('active', true)->first();
+            $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nUser " . $user->uuid);
+            $this->container->user_manager->login($user->uuid);
+            $user->destroyResetCode();
+        } catch (\Exception $e) {
+            $this->container['error.log']->error(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
+            return $response->withRedirect($this->container->router->pathFor('auth.login'));
+        }
+
+        try {
+            $user = $this->container->user_manager->changePassword($request->getParam('cppassword'), $user->uuid);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
+            return $response->withRedirect($this->container->router->pathFor('auth.login'));
+        }
+
+        $this->container->flash->addMessage('success', 'Your password has been changed.');
+
+        return $response->withRedirect($this->container->router->pathFor('home'));
+    }
+
+    /**
      * Draw the edit user page
      * @param $request
      * @param $response
@@ -179,7 +219,13 @@ class AuthController extends BaseController
             return $response->withRedirect($this->container->router->pathFor('auth.user.password'));
         }
 
-        $this->container->user_manager->currentUser()->setPassword($request->getParam('password'));
+        try {
+            $user = $this->container->user_manager->currentUser();
+            $user = $this->container->user_manager->changePassword($request->getParam('password'), $user->uuid);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
+            return $response->withRedirect($this->container->router->pathFor('auth.login'));
+        }
 
         $this->container->flash->addMessage('success', 'Your password has been changed.');
 

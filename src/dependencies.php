@@ -167,7 +167,13 @@ $container['http_client'] = function () {
  */
 $container['mailer'] = function () {
     // Sendmail
-    $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -bs');
+    if ( getenv('MAIL_TRANSPORT') == "SENDMAIL" ) {
+        $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -bs');
+    } elseif ( getenv('MAIL_TRANSPORT') == "SMTP" ) {
+        $transport = new Swift_SmtpTransport(getenv('SMTP_SERVER'), getenv('SMTP_PORT'));
+    } else {
+        return null;
+    }
     return new Swift_Mailer($transport);
 };
 

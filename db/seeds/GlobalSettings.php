@@ -37,6 +37,23 @@ class GlobalSettings extends AbstractSeed
                 "env" => true
             ],
             [
+                "setting" => "MAIL_TRANSPORT",
+                "value" => "SMTP", // or SENDMAIL
+                "env" => true
+            ],
+            [
+                "setting" => "SMTP_SERVER",
+                "value" => "192.168.1.76",
+                "env" => true,
+                "allow_null" => true
+            ],
+            [
+                "setting" => "SMTP_PORT",
+                "value" => "1025",
+                "env" => true,
+                "allow_null" => true
+            ],
+            [
                 "setting" => "APP_EMAIL_ADDRESS",
                 "value" =>  "nucleus@nucleus.com",
                 "env" => true

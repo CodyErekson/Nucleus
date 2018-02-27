@@ -144,6 +144,43 @@ class UserController extends BaseController
     }
 
     /**
+     * Send a given user's password reset code (admin route)
+     * @param $request
+     * @param $response
+     * @param $arguments
+     * @return mixed
+     */
+    public function sendResetCode($request, $response, $arguments)
+    {
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nSending reset code");
+
+        $res = $response->withHeader("Content-Type", "application/json");
+
+        if ( (!isset($arguments['uuid'])) || (empty($arguments['uuid'])) ){
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Must provide a uuid"]));
+            return $res;
+        }
+
+        $uuid = $arguments['uuid'];
+
+        $user = \Nucleus\Models\User::find($uuid);
+
+        // Email the code to the user
+        if ( is_null($user->container)) {
+            $user->setContainer($this->container);
+        }
+        try {
+            $result = $user->sendResetCode();
+        } catch (\Exception $e){
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+            return $res;
+        }
+        return $res->withStatus(201)->getBody()->write(json_encode(["status" => (bool)$result]));
+    }
+
+    /**
      * Return an array of all users in the database
      * @param $request
      * @param $response

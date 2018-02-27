@@ -134,13 +134,13 @@ $app->group('/api', function () {
 
     $this->get('/user/{uuid}/', 'UserController:getUser');
 
-    //$this->get('/user/reset/{uuid}/', 'UserController:getResetCode');
+    $this->get('/user/{uuid}/reset/send/', 'UserController:sendResetCode');
 
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 
 // Authenticate routes
-// TODO -- apply ACL rules
+
 $app->post('/api/user/login/', 'UserController:login');
 
 $app->get('/api/user/{uuid}/reset/', 'UserController:getResetCode');

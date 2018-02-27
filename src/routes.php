@@ -56,6 +56,10 @@ $app->group('', function () {
 
     $this->post('/auth/login/', 'AuthController:postLogin');
 
+    //$this->get('/auth/login/reset/', 'AuthController:getLoginReset');
+
+    $this->post('/auth/login/reset/', 'AuthController:postLoginReset')->setName('auth.login.reset');
+
 })->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
@@ -107,6 +111,17 @@ $app->group('/d', function () {
  * API routes -- output JSON
  */
 
+// Guest only routes
+$app->group('', function () {
+
+    $this->get('/api/user/{email}/reset/email/', 'UserController:getResetCodeEmail')
+        ->setName('api.user.email.reset');
+
+    $this->get('/api/user/{username}/reset/username/', 'UserController:getResetCodeUsername')
+        ->setName('api.user.username.reset');
+
+})->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
+
 // User routes
 $app->group('/api', function () {
 
@@ -134,13 +149,16 @@ $app->group('/api', function () {
 
     $this->get('/user/{uuid}/', 'UserController:getUser');
 
-    //$this->get('/user/reset/{uuid}/', 'UserController:getResetCode');
+    $this->get('/user/{uuid}/reset/send/', 'UserController:sendResetCode')->setName('api.user.reset.send');
 
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 
-// Authenticate routes
-// TODO -- apply ACL rules
+// Public (accessible to everyone) routes -- these must be included in the JWT passthrough
+
 $app->post('/api/user/login/', 'UserController:login');
+
+$app->get('/api/user/{username}/check/', 'UserController:checkUsername')
+    ->setName('api.user.username.check');
 
 $app->get('/api/user/{uuid}/reset/', 'UserController:getResetCode');

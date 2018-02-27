@@ -91,6 +91,7 @@ class User extends Model
 
     /**
      * Define the user's password
+     * NOTE: this does not seem to work for some reason
      * @param $password
      * @return bool
      */
@@ -266,6 +267,15 @@ class User extends Model
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Reset codes are one-time use
+     * @return mixed
+     */
+    public function destroyResetCode()
+    {
+        return $this->reset_code()->delete();
     }
 
     /**

@@ -28,6 +28,39 @@ class UserController extends BaseController
     }
 
     /**
+     * Check if provided username exists
+     * @param $request
+     * @param $response
+     * @param $arguments
+     * @return mixed
+     */
+    public function checkUsername($request, $response, $arguments)
+    {
+        if ( (!isset($arguments['username'])) || (empty($arguments['username'])) ){
+            $res = $response->withHeader("Content-Type", "application/json");
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Must provide a username"]));
+            return $res;
+        }
+
+        $username = $arguments['username'];
+
+        $user = \Nucleus\Models\User::where('username', '=', $username)->first();
+
+        $res = $response->withHeader("Content-Type", "application/json");
+
+        if ( count($user) == 0 ){
+            return $res->withStatus(201)->getBody()->write(json_encode(["status" => false]));
+        }
+
+        if ( !(bool)$user->active ){
+            return $res->withStatus(201)->getBody()->write(json_encode(["status" => -1]));
+        }
+
+        return $res->withStatus(201)->getBody()->write(json_encode(["status" => true]));
+    }
+
+    /**
      * Login a user with username/password, used to fetch a user's JSON Web Token
      * @param $request
      * @param $response
@@ -92,6 +125,70 @@ class UserController extends BaseController
     }
 
     /**
+     * Determine a uuid by email then call sendResetCode
+     * @param $request
+     * @param $response
+     * @param $arguments
+     * @return mixed
+     */
+    public function getResetCodeEmail($request, $response, $arguments)
+    {
+        if ( (!isset($arguments['email'])) || (empty($arguments['email'])) ){
+            $res = $response->withHeader("Content-Type", "application/json");
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Must provide an email address"]));
+            return $res;
+        }
+
+        $email = $arguments['email'];
+
+        $user = \Nucleus\Models\User::where('email', '=', $email)->first();
+
+        if ( count($user) == 0 ){
+            $res = $response->withHeader("Content-Type", "application/json");
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Cannot find an account with the email address " . $email]));
+            return $res;
+        }
+
+        $arguments['uuid'] = $user->uuid;
+
+        $this->getResetCode($request, $response, $arguments);
+    }
+
+    /**
+     * Determine a uuid by username then call sendResetCode
+     * @param $request
+     * @param $response
+     * @param $arguments
+     * @return mixed
+     */
+    public function getResetCodeUsername($request, $response, $arguments)
+    {
+        if ( (!isset($arguments['username'])) || (empty($arguments['username'])) ){
+            $res = $response->withHeader("Content-Type", "application/json");
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Must provide a username"]));
+            return $res;
+        }
+
+        $username = $arguments['username'];
+
+        $user = \Nucleus\Models\User::where('username', '=', $username)->first();
+
+        if ( count($user) == 0 ){
+            $res = $response->withHeader("Content-Type", "application/json");
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Cannot find an account with the username " . $username]));
+            return $res;
+        }
+
+        $arguments['uuid'] = $user->uuid;
+
+        $this->getResetCode($request, $response, $arguments);
+    }
+
+    /**
      * Get a given user's password reset code
      * @param $request
      * @param $response
@@ -128,6 +225,43 @@ class UserController extends BaseController
 
             return $res->withStatus(201)->getBody()->write(json_encode(["code" => $code->getCode()]));
         }
+
+        // Email the code to the user
+        if ( is_null($user->container)) {
+            $user->setContainer($this->container);
+        }
+        try {
+            $result = $user->sendResetCode();
+        } catch (\Exception $e){
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+            return $res;
+        }
+        return $res->withStatus(201)->getBody()->write(json_encode(["status" => (bool)$result]));
+    }
+
+    /**
+     * Send a given user's password reset code (admin route)
+     * @param $request
+     * @param $response
+     * @param $arguments
+     * @return mixed
+     */
+    public function sendResetCode($request, $response, $arguments)
+    {
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nSending reset code");
+
+        $res = $response->withHeader("Content-Type", "application/json");
+
+        if ( (!isset($arguments['uuid'])) || (empty($arguments['uuid'])) ){
+            $res = $res->withStatus(400);
+            $res->getBody()->write(json_encode(["error" => "Must provide a uuid"]));
+            return $res;
+        }
+
+        $uuid = $arguments['uuid'];
+
+        $user = \Nucleus\Models\User::find($uuid);
 
         // Email the code to the user
         if ( is_null($user->container)) {

@@ -36,7 +36,7 @@ class UserController extends BaseController
      */
     public function checkUsername($request, $response, $arguments)
     {
-        if ( (!isset($arguments['username'])) || (empty($arguments['username'])) ){
+        if ((!isset($arguments['username'])) || (empty($arguments['username']))) {
             $res = $response->withHeader("Content-Type", "application/json");
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Must provide a username"]));
@@ -49,11 +49,11 @@ class UserController extends BaseController
 
         $res = $response->withHeader("Content-Type", "application/json");
 
-        if ( count($user) == 0 ){
+        if (count($user) == 0) {
             return $res->withStatus(201)->getBody()->write(json_encode(["status" => false]));
         }
 
-        if ( !(bool)$user->active ){
+        if (!(bool)$user->active) {
             return $res->withStatus(201)->getBody()->write(json_encode(["status" => -1]));
         }
 
@@ -133,7 +133,7 @@ class UserController extends BaseController
      */
     public function getResetCodeEmail($request, $response, $arguments)
     {
-        if ( (!isset($arguments['email'])) || (empty($arguments['email'])) ){
+        if ((!isset($arguments['email'])) || (empty($arguments['email']))) {
             $res = $response->withHeader("Content-Type", "application/json");
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Must provide an email address"]));
@@ -144,7 +144,7 @@ class UserController extends BaseController
 
         $user = \Nucleus\Models\User::where('email', '=', $email)->first();
 
-        if ( count($user) == 0 ){
+        if (count($user) == 0) {
             $res = $response->withHeader("Content-Type", "application/json");
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Cannot find an account with the email address " . $email]));
@@ -165,7 +165,7 @@ class UserController extends BaseController
      */
     public function getResetCodeUsername($request, $response, $arguments)
     {
-        if ( (!isset($arguments['username'])) || (empty($arguments['username'])) ){
+        if ((!isset($arguments['username'])) || (empty($arguments['username']))) {
             $res = $response->withHeader("Content-Type", "application/json");
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Must provide a username"]));
@@ -176,7 +176,7 @@ class UserController extends BaseController
 
         $user = \Nucleus\Models\User::where('username', '=', $username)->first();
 
-        if ( count($user) == 0 ){
+        if (count($user) == 0) {
             $res = $response->withHeader("Content-Type", "application/json");
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Cannot find an account with the username " . $username]));
@@ -201,7 +201,7 @@ class UserController extends BaseController
 
         $res = $response->withHeader("Content-Type", "application/json");
 
-        if ( (!isset($arguments['uuid'])) || (empty($arguments['uuid'])) ){
+        if ((!isset($arguments['uuid'])) || (empty($arguments['uuid']))) {
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Must provide a uuid"]));
             return $res;
@@ -212,9 +212,9 @@ class UserController extends BaseController
         $user = \Nucleus\Models\User::find($uuid);
 
         // Return code if current user is an admin
-        if ( ($this->container->user_manager->check())
+        if (($this->container->user_manager->check())
             &&
-            ($this->container->user_manager->currentUser()->getAdmin()) ){
+            ($this->container->user_manager->currentUser()->getAdmin()) ) {
             try {
                 $code = $user->getResetCode();
             } catch (\Illuminate\Database\QueryException $e) {
@@ -227,12 +227,12 @@ class UserController extends BaseController
         }
 
         // Email the code to the user
-        if ( is_null($user->container)) {
+        if (is_null($user->container)) {
             $user->setContainer($this->container);
         }
         try {
             $result = $user->sendResetCode();
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
             return $res;
@@ -253,7 +253,7 @@ class UserController extends BaseController
 
         $res = $response->withHeader("Content-Type", "application/json");
 
-        if ( (!isset($arguments['uuid'])) || (empty($arguments['uuid'])) ){
+        if ((!isset($arguments['uuid'])) || (empty($arguments['uuid']))) {
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => "Must provide a uuid"]));
             return $res;
@@ -264,12 +264,12 @@ class UserController extends BaseController
         $user = \Nucleus\Models\User::find($uuid);
 
         // Email the code to the user
-        if ( is_null($user->container)) {
+        if (is_null($user->container)) {
             $user->setContainer($this->container);
         }
         try {
             $result = $user->sendResetCode();
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $res = $res->withStatus(400);
             $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
             return $res;

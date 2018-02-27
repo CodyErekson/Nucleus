@@ -179,7 +179,8 @@ class DashboardController extends BaseController
         if (!$this->container->user_manager->updateUserValidation($request, $user->uuid)) {
             $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ .
                 "\nFailed validation: " . json_encode($_SESSION['errors']));
-            return $response->withRedirect($this->container->router->pathFor('dashboard.user', ['uuid' => $user->uuid]));
+            return $response->withRedirect($this->container->router
+                ->pathFor('dashboard.user', ['uuid' => $user->uuid]));
         }
 
         $data = $request->getParsedBody();
@@ -195,7 +196,8 @@ class DashboardController extends BaseController
             $user->setActive($active);
         } catch (\Illuminate\Database\QueryException $e) {
             $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
-            return $response->withRedirect($this->container->router->pathFor('dashboard.user', ['uuid' => $user->uuid]));
+            return $response->withRedirect($this->container->router
+                ->pathFor('dashboard.user', ['uuid' => $user->uuid]));
         }
 
         $this->container->flash->addMessage('success', $user->username . ' has been successfully modified.');
@@ -220,14 +222,16 @@ class DashboardController extends BaseController
         if (!$this->container->user_manager->changePasswordValidationAdmin($request, $user->uuid)) {
             $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ .
                 "\nFailed validation: " . json_encode($_SESSION['errors']));
-            return $response->withRedirect($this->container->router->pathFor('dashboard.user', ['uuid' => $user->uuid]));
+            return $response->withRedirect($this->container->router
+                ->pathFor('dashboard.user', ['uuid' => $user->uuid]));
         }
 
         try {
             $user = $this->container->user_manager->changePassword($request->getParam('password'), $user->uuid);
         } catch (\Illuminate\Database\QueryException $e) {
             $this->container['error.log']->debug(__FILE__ . " on line " . __LINE__ . "\nerror: " . $e->getMessage());
-            return $response->withRedirect($this->container->router->pathFor('dashboard.user', ['uuid' => $user->uuid]));
+            return $response->withRedirect($this->container->router
+                ->pathFor('dashboard.user', ['uuid' => $user->uuid]));
         }
 
         $this->container->flash->addMessage('success', $user->username . ' has been successfully modified.');
@@ -262,5 +266,4 @@ class DashboardController extends BaseController
 
         return $response->withRedirect($this->container->router->pathFor('dashboard'));
     }
-
 }

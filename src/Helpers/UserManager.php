@@ -328,7 +328,7 @@ class UserManager
             $this->currentUser()->setContainer($this->container);
             $token = $this->currentUser()->getToken();
             setcookie('token', $token->token, time() + (3600 * 24 * 15), '/', getenv('DOMAIN'));
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n" . $e->getMessage());
         }
     }

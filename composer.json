@@ -47,6 +47,14 @@
             "NucleusTest\\": "tests/phpunit/"
         }
     },
+    "scripts": {
+        "cscheck": "php vendor/bin/phpcs --standard=PSR1,PSR2 src/",
+        "csfix": "php vendor/bin/phpcbf --standard=PSR1,PSR2 src/",
+        "cs": [
+            "@cscheck",
+            "@csfix"
+        ]
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "version": "1.0.1"

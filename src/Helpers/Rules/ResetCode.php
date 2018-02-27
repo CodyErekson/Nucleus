@@ -35,25 +35,25 @@ class ResetCode extends AbstractRule
     {
         $input = base64_encode(hex2bin($input));
         $code = \Nucleus\Models\ResetCode::where('code', $input)->first();
-        if ( is_null($code) ){
+        if (is_null($code)) {
             return false;
         }
 
-        if ( !$code->isValid() ){
+        if (!$code->isValid()) {
             return false;
         }
 
         $code_user = \Nucleus\Models\User::where('uuid', $code->uuid)->where('active', true)->first();
-        if ( is_null($code_user) ){
+        if (is_null($code_user)) {
             return false;
         }
 
         $user = \Nucleus\Models\User::where('username', $this->username)->where('active', true)->first();
-        if ( is_null($user) ){
+        if (is_null($user)) {
             return false;
         }
 
-        if ( $code_user->is($user) ){
+        if ($code_user->is($user)) {
             return true;
         }
         return false;

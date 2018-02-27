@@ -43,7 +43,7 @@ class User extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function reset_code()
+    public function resetCode()
     {
         return $this->hasOne('\Nucleus\Models\ResetCode', 'uuid');
     }
@@ -236,24 +236,24 @@ class User extends Model
      */
     public function getResetCode()
     {
-        if (( is_null($this->reset_code) ) || ( !$this->reset_code->isValid() )) {
+        if (( is_null($this->resetCode) ) || ( !$this->resetCode->isValid() )) {
             //we need to create a new reset code
             $code = $this->createResetCode();
             if (!$code) {
                 return false;
             } else {
-                if (is_null($this->reset_code)) {
-                    $this->reset_code = ResetCode::create([
+                if (is_null($this->resetCode)) {
+                    $this->resetCode = ResetCode::create([
                         'uuid' => $this->uuid,
                         'code' => $code,
                         'expiration' => date('Y-m-d H:i:s', time() + (3600 * 24 * 2))
                     ]);
                 } else {
-                    $this->reset_code->updateCode($code);
+                    $this->resetCode->updateCode($code);
                 }
             }
         }
-        return $this->reset_code;
+        return $this->resetCode;
     }
 
     /**
@@ -275,7 +275,7 @@ class User extends Model
      */
     public function destroyResetCode()
     {
-        return $this->reset_code()->delete();
+        return $this->resetCode()->delete();
     }
 
     /**
@@ -284,7 +284,7 @@ class User extends Model
      */
     public function checkResetCode()
     {
-        return $this->reset_code()->isValid();
+        return $this->resetCode()->isValid();
     }
 
     /**
@@ -293,7 +293,7 @@ class User extends Model
      */
     public function sendResetCode()
     {
-        if ( is_null($this->container) ){
+        if (is_null($this->container)) {
             //we don't have a container, therefore no mail handler
             return false;
         }

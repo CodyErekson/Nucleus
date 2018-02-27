@@ -59,7 +59,6 @@ $app->group('', function () {
     //$this->get('/auth/login/reset/', 'AuthController:getLoginReset');
 
     $this->post('/auth/login/reset/', 'AuthController:postLoginReset')->setName('auth.login.reset');
-
 })->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
@@ -75,7 +74,6 @@ $app->group('', function () {
     $this->get('/auth/user/password/', 'AuthController:getPasswordChange')->setName('auth.user.password');
 
     $this->post('/auth/user/password/', 'AuthController:postPasswordChange');
-
 })->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // Admin dashboard routes
@@ -102,8 +100,6 @@ $app->group('/d', function () {
     $this->post('/user/{uuid}/', 'DashboardController:postUser');
 
     $this->post('/user/{uuid}/password/', 'DashboardController:postUserPassword')->setName('dashboard.user.password');
-
-
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 
@@ -119,14 +115,12 @@ $app->group('', function () {
 
     $this->get('/api/user/{username}/reset/username/', 'UserController:getResetCodeUsername')
         ->setName('api.user.username.reset');
-
 })->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
 $app->group('/api', function () {
 
     $this->post('/user/logout/', 'UserController:logout');
-
 })->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 //$app->get('/api/user/reset/', 'UserController:getResetCode');
@@ -150,7 +144,6 @@ $app->group('/api', function () {
     $this->get('/user/{uuid}/', 'UserController:getUser');
 
     $this->get('/user/{uuid}/reset/send/', 'UserController:sendResetCode')->setName('api.user.reset.send');
-
 })->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
     ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 

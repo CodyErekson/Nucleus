@@ -91,17 +91,17 @@ class RequestSessionRule implements \Slim\Middleware\JwtAuthentication\RuleInter
         // If we have a passthrough path
         foreach ((array)$this->passthrough as $passthrough) {
             preg_match_all("/{(.*?)}/", $passthrough, $matches);
-            foreach($matches[1] as $match) {
+            foreach ($matches[1] as $match) {
                 if (strpos($passthrough, "{" . $match . "}") !== false) {
                     $route = $request->getAttribute('route');
-                    if ( !is_null($route) ) {
+                    if (!is_null($route)) {
                         $arg = $route->getArgument($match);
                         $passthrough = str_replace("{" . $match . "}", $arg, $passthrough);
                     }
                 }
             }
             $this->container['debug.log']->debug("Compare URI " . $uri . " to passthrough " . $passthrough);
-            if ( strcmp($uri, $passthrough) == 0 ) {
+            if (strcmp($uri, $passthrough) == 0) {
                 return false;
             }
         }

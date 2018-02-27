@@ -16,7 +16,8 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     "algorithm" => 'HS256',
     "relaxed" => ["localhost", getenv('DOMAIN')],
     "rules" => [
-        new \Nucleus\Helpers\RequestSessionRule($container,
+        new \Nucleus\Helpers\RequestSessionRule(
+            $container,
             [
                 "/",
                 "/api/user/login/",
@@ -27,7 +28,8 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
                 "/api/user/{email}/reset/email/",
                 "/api/user/{username}/reset/username/",
                 "/api/user/{username}/check/"
-            ]),
+            ]
+        ),
         new \Slim\Middleware\JwtAuthentication\RequestPathRule()
     ],
     "callback" => function ($request, $response, $arguments) use ($container) {

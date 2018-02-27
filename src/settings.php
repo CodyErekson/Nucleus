@@ -34,6 +34,9 @@ return [
         ],
     ],
     'commands' => [
-        'Test' => \Nucleus\Helpers\Commands\TestCommand::class
+        // Application commands
+        'user:create' => \Nucleus\Helpers\Commands\UserCreateCommand::class,
+        'user:edit' => \Nucleus\Helpers\Commands\UserEditCommand::class,
+        'test' => \Nucleus\Helpers\Commands\TestCommand::class
     ],
 ];

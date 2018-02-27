@@ -1,0 +1,31 @@
+{% extends "skeleton/page.twig" %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Admin Control Panel</div>
+                        <div class="panel-body">
+
+                            <div class="text-center">
+                                <a href="{{ path_for('dashboard.settings') }}" class="btn btn-link btn-fill btn-wd">
+                                    <i class="ti-settings"></i> Global Settings
+                                </a>
+                                <a href="{{ path_for('dashboard.users') }}" class="btn btn-link btn-fill btn-wd">
+                                    <i class="ti-user"></i> Manage Users
+                                </a>
+                            </div>
+                            <div class="clearfix"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

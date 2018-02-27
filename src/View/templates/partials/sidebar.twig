@@ -15,63 +15,29 @@
             </div>
 
             <ul class="nav">
-    {%  if auth.check %}
-        <li class="active">
-            <a href="{{ path_for('home') }}">
-                <i class="ti-home"></i>
-                <p>Home</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-panel"></i>
-                <p>Dashboard</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-user"></i>
-                <p>User Profile</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-view-list-alt"></i>
-                <p>Table List</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-text"></i>
-                <p>Typography</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-pencil-alt2"></i>
-                <p>Icons</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-map"></i>
-                <p>Maps</p>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="ti-bell"></i>
-                <p>Notifications</p>
-            </a>
-        </li>
-    {% else %}
-        <li class="active">
-            <a href="{{ path_for('home') }}">
-                <i class="ti-home"></i>
-                <p>Home</p>
-            </a>
-        </li>
-    {% endif %}
+                {%  if auth.check %}
+                    <li{% if pageName == 'home' %} class="active"{% endif %}>
+                        <a href="{{ path_for('home') }}">
+                            <i class="ti-home"></i>
+                            <p>Home</p>
+                        </a>
+                    </li>
+                    {% if auth.roles.admin %}
+                        <li{% if pageName == 'dashboard' %} class="active"{% endif %}>
+                            <a href="{{ path_for('dashboard') }}">
+                                <i class="ti-panel"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li{% if pageName == 'home' %} class="active"{% endif %}>
+                        <a href="{{ path_for('home') }}">
+                            <i class="ti-home"></i>
+                            <p>Home</p>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

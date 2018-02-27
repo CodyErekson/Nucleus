@@ -45,6 +45,33 @@ class Validator
     }
 
     /**
+     * Validate provided data, using an array rather than a request object
+     * @param $data
+     * @param array $rules
+     * @param $identifier Optional, if set errors will be assigned as array with this as key
+     * @return $this
+     */
+    public function validateArray($data, array $rules, $identifier = null)
+    {
+        foreach ($rules as $field => $rule) {
+            try {
+                $rule->setName(ucfirst($field))->assert($data[$field]);
+            } catch (NestedValidationException $e) {
+                if (is_null($identifier)) {
+                    $this->errors[$field] = $e->getMessages();
+                } else {
+                    $this->errors[$identifier][$field] = $e->getMessages();
+                }
+                $this->container['debug.log']->debug("Validation error for " . $field, $e->getMessages());
+            }
+        }
+
+        $_SESSION['errors'] = $this->errors;
+
+        return $this;
+    }
+
+    /**
      * Check if a validation failed
      * @return bool
      */

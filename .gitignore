@@ -17,6 +17,8 @@ logs/**.log
 phinx.yml
 phpunit.xml
 public/source
+public/assets/
+dev/assets/min.js/bundle.min.js
 
 
 # Compiled source #

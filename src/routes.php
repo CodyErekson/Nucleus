@@ -45,57 +45,113 @@ $app->get('/test/', function ($request, $response) {
  * View routes -- output HTML
  */
 
-// Guest routes
+// Guest only routes
 $app->group('', function () {
 
-    $this->get('/auth/signup', 'AuthController:getSignUp')->setName('auth.signup');
+    $this->get('/auth/signup/', 'AuthController:getSignUp')->setName('auth.signup');
 
-    $this->post('/auth/signup', 'AuthController:postSignUp');
+    $this->post('/auth/signup/', 'AuthController:postSignUp');
 
-    $this->get('/auth/login', 'AuthController:getLogin')->setName('auth.login');
+    $this->get('/auth/login/', 'AuthController:getLogin')->setName('auth.login');
 
-    $this->post('/auth/login', 'AuthController:postLogin');
+    $this->post('/auth/login/', 'AuthController:postLogin');
+
+    //$this->get('/auth/login/reset/', 'AuthController:getLoginReset');
+
+    $this->post('/auth/login/reset/', 'AuthController:postLoginReset')->setName('auth.login.reset');
 })->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
 
 // User routes
 $app->group('', function () {
 
-    $this->get('/auth/logout', 'AuthController:getLogout')->setName('auth.logout');
+    // Authorization stuff
+    $this->get('/auth/logout/', 'AuthController:getLogout')->setName('auth.logout');
 
-    $this->get('/auth/user/update', 'AuthController:getUpdateUser')->setName('auth.user.update');
+    $this->get('/auth/user/update/', 'AuthController:getUpdateUser')->setName('auth.user.update');
 
-    $this->post('/auth/user/update', 'AuthController:postUpdateUser');
+    $this->post('/auth/user/update/', 'AuthController:postUpdateUser');
 
-    $this->get('/auth/user/password', 'AuthController:getPasswordChange')->setName('auth.user.password');
+    $this->get('/auth/user/password/', 'AuthController:getPasswordChange')->setName('auth.user.password');
 
-    $this->post('/auth/user/password', 'AuthController:postPasswordChange');
+    $this->post('/auth/user/password/', 'AuthController:postPasswordChange');
 })->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
+
+// Admin dashboard routes
+$app->group('/d', function () {
+
+    // Dashboard page
+    $this->get('/', 'DashboardController:getDashboard')->setName('dashboard');
+    $this->get('/dashboard/', 'DashboardController:getDashboard')->setName('dashboard');
+
+    $this->post('/', 'DashboardController:postDashboard');
+
+    // Global settings page
+    $this->get('/settings/', 'DashboardController:getSettings')->setName('dashboard.settings');
+
+    $this->post('/settings/', 'DashboardController:postSettings');
+
+    // User management pages
+    $this->get('/users/', 'DashboardController:getUsers')->setName('dashboard.users');
+
+    $this->post('/user/create/', 'DashboardController:createUser')->setName('dashboard.user.create');
+
+    $this->get('/user/{uuid}/', 'DashboardController:getUser')->setName('dashboard.user');
+
+    $this->post('/user/{uuid}/', 'DashboardController:postUser');
+
+    $this->post('/user/{uuid}/password/', 'DashboardController:postUserPassword')->setName('dashboard.user.password');
+})->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
+    ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
 
 /**
  * API routes -- output JSON
  */
 
-// Admin routes
+// Guest only routes
 $app->group('', function () {
 
-    $this->post('/api/user/', 'UserController:createUser');
+    $this->get('/api/user/{email}/reset/email/', 'UserController:getResetCodeEmail')
+        ->setName('api.user.email.reset');
+
+    $this->get('/api/user/{username}/reset/username/', 'UserController:getResetCodeUsername')
+        ->setName('api.user.username.reset');
+})->add(new Nucleus\Middleware\ACL\GuestMiddleware($container))->add(new CsrfCheckMiddleware($container));
+
+// User routes
+$app->group('/api', function () {
+
+    $this->post('/user/logout/', 'UserController:logout');
+})->add(new Nucleus\Middleware\ACL\MemberMiddleware($container))->add(new CsrfCheckMiddleware($container));
+
+//$app->get('/api/user/reset/', 'UserController:getResetCode');
+
+// Admin routes
+$app->group('/api', function () {
+
+    $this->post('/user/', 'UserController:createUser');
 
     //remember to include header X-Http-Method-Override:PUT, actually use POST
-    $this->put('/api/user/{uuid}', 'UserController:updateUser');
+    $this->put('/user/{uuid}/', 'UserController:updateUser');
 
-    $this->put('/api/user/{uuid}/deactivate/', 'UserController:deactivateUser');
+    $this->put('/user/{uuid}/deactivate/', 'UserController:deactivateUser');
 
-    $this->put('/api/user/{uuid}/activate/', 'UserController:activateUser');
+    $this->put('/user/{uuid}/activate/', 'UserController:activateUser');
 
-    $this->delete('/api/user/{uuid}', 'UserController:deleteUser');
-})->add(new Nucleus\Middleware\ACL\AdminMiddleware($container));
+    $this->delete('/user/{uuid}/', 'UserController:deleteUser')->setName('api.user.delete');
 
-// Authenticate routes
-// TODO -- apply ACL rules
+    $this->get('/user/', 'UserController:getUsers');
+
+    $this->get('/user/{uuid}/', 'UserController:getUser');
+
+    $this->get('/user/{uuid}/reset/send/', 'UserController:sendResetCode')->setName('api.user.reset.send');
+})->add(new Nucleus\Middleware\ACL\AdminMiddleware($container))
+    ->add(new Nucleus\Middleware\ACL\MemberMiddleware($container));
+
+// Public (accessible to everyone) routes -- these must be included in the JWT passthrough
+
 $app->post('/api/user/login/', 'UserController:login');
 
-$app->post('/api/user/logout/', 'UserController:logout');
+$app->get('/api/user/{username}/check/', 'UserController:checkUsername')
+    ->setName('api.user.username.check');
 
-$app->get('/api/user/', 'UserController:getUsers');
-
-$app->get('/api/user/{uuid}', 'UserController:getUser');
+$app->get('/api/user/{uuid}/reset/', 'UserController:getResetCode');

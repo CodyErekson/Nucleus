@@ -16,10 +16,10 @@ class BaseCommand
     /**
      * Constructor
      *
-     * @param ContainerInterface $container
+     * @param \Slim\Container $container
      * @return void
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(\Slim\Container $container)
     {
         // access container classes
         // eg $container->get('redis');

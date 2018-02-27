@@ -16,19 +16,17 @@ class AdminMiddleware extends BaseMiddleware
 
     public function __invoke($request, $response, $next)
     {
-        $roles = $this->container->user_manager->currentUser()->getRoles();
-        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nRoles", $roles);
-        if ( (isset($roles['admin'])) && ($roles['admin']) ){
-            // User is an admin
-            $this->container->user_manager->currentUser()->setAdmin(true);
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n");
+        // We know user is logged in now, just find out if they are an admin
+        if ($this->container->user_manager->currentUser()->getAdmin()) {
             $response = $next($request, $response);
             return $response;
-        } else {
-            $this->container->flash->addMessage('error', 'This page is only available to administrators.');
-            $res = $response->withHeader("Content-Type", "application/json");
-            $res = $res->withStatus(401);
-            $res->getBody()->write(json_encode(['error' => 'This page is only available to administrators.']));
-            return $res;
         }
+
+        $this->container->flash->addMessage('error', 'This page is only available to administrators.');
+        $response = $response->withHeader("Content-Type", "application/json");
+        $response = $response->withStatus(401);
+        $response->getBody()->write(json_encode(['error' => 'This page is only available to administrators.']));
+        return $response;
     }
 }

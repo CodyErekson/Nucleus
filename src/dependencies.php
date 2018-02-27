@@ -27,6 +27,13 @@ $container['user_manager'] = function ($c) {
     return new \Nucleus\Helpers\UserManager($c);
 };
 
+/**
+ * Manage background processes
+ */
+$container['background_process'] = $container->factory(function ($c) {
+    return new \Nucleus\Helpers\BackgroundProcess();
+});
+
 /* Components */
 
 /**
@@ -48,13 +55,14 @@ $container['view'] = function ($c) {
         //'cache' => realpath($env['env_path'] . '/src/View/cache'),
         'auto_reload' => ( getenv('ENV') == 'development' ? true : false ),
         'strict_variables' => ( getenv('ENV') == 'development' ? false : true ),
-        //'debug' => true
+        'debug' => true
     ]);
 
     // Instantiate and add Slim and Nucleus specific extensions
     $basePath = rtrim(str_ireplace('index.php', '', $c['request']->getUri()->getBasePath()), '/');
     $view->addExtension(new Slim\Views\TwigExtension($c->router, $basePath));
     $view->addExtension(new Nucleus\View\DebugExtension);
+    $view->addExtension(new Twig_Extension_Debug());
 
     // Pass in some global variables
     $view->getEnvironment()->addGlobal('env', getenv('ENV'));
@@ -62,10 +70,13 @@ $container['view'] = function ($c) {
     $view->getEnvironment()->addGlobal('base_url', getenv('BASE_URL'));
     $view->getEnvironment()->addGlobal('domain', getenv('DOMAIN'));
 
-    $view->getEnvironment()->addGlobal('auth', [
-        'check' => $c->user_manager->check(),
-        'user' => $c->user_manager->currentUser()
-    ]);
+    if ($c->user_manager->check()) {
+        $view->getEnvironment()->addGlobal('auth', [
+            'check' => $c->user_manager->check(),
+            'user' => $c->user_manager->currentUser(),
+            'roles' => $c->user_manager->currentUser()->getRoles()
+        ]);
+    };
 
     if ( $c->user_manager->check() ) {
         $view->getEnvironment()->addGlobal('roles', $c->user_manager->currentUser()->getRoles());
@@ -144,6 +155,34 @@ v::with('Nucleus\\Helpers\\Rules\\');
  */
 $container['jwt'] = function () {
     return new Firebase\JWT\JWT();
+};
+
+/**
+ * Guzzle HTTP client
+ * @return \GuzzleHttp\Client
+ */
+$container['http_client'] = function () {
+    return new GuzzleHttp\Client();
+};
+
+/**
+ * Email transport handler
+ * @return Swift_Mailer
+ */
+$container['mailer'] = function () {
+    // Sendmail
+    if (getenv('MAIL_TRANSPORT') == "SENDMAIL") {
+        $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -bs');
+    } elseif (getenv('MAIL_TRANSPORT') == "SMTP") {
+        $transport = new Swift_SmtpTransport(getenv('SMTP_SERVER'), (int)getenv('SMTP_PORT'));
+    } else {
+        return null;
+    }
+    return new Swift_Mailer($transport);
+};
+
+$container['email'] = function () {
+    return new Swift_Message();
 };
 
 /**
@@ -228,5 +267,15 @@ $container['UserController'] = function ($c) {
  */
 $container['AuthController'] = function ($c) {
     $controller = new \Nucleus\Controllers\AuthController($c);
+    return $controller;
+};
+
+/**
+ * Controller for admin dashboard routes
+ * @param $c
+ * @return \Nucleus\Controllers\DashboardController
+ */
+$container['DashboardController'] = function ($c) {
+    $controller = new \Nucleus\Controllers\DashboardController($c);
     return $controller;
 };

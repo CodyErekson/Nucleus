@@ -1,0 +1,203 @@
+{% extends "skeleton/page.twig" %}
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Manage Users</div>
+                        <table class="table">
+                            <tr>
+                                <th>Username</th>
+                                <th>Email Address</th>
+                                <th class="text-center">Admin</th>
+                                <th class="text-center">Enabled</th>
+                                <th class="text-center"></th>
+                            </tr>
+                            {% for uuid,user in users %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td class="text-center">{% if user.admin %}<i class="ti-check"></i>{% endif %}</td>
+                                    <td class="text-center">{% if user.active %}<i class="ti-check"></i>{% endif %}</td>
+                                    <td class="text-center">
+                                        <a role="button" type="button" class="btn btn-primary edit" title="Edit User"
+                                           href="{{ path_for('dashboard.user', {'uuid': user.uuid}) }}">
+                                            <i class="ti-settings"></i>
+                                        </a>
+                                        <button type="button" id="{{ user.uuid }}" class="btn btn-success delete"
+                                                title="Delete User" data-toggle="modal" data-target="#delete-confirm"
+                                                data-username="{{ user.username }}">
+                                            <i class="ti-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <div class="panel-footer">
+                            <div class="text-center">
+                                <a role="button" class="btn btn-info btn-fill btn-wd" href="{{ path_for('dashboard') }}">
+                                    <i class="ti-back-left"></i> Back
+                                </a>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">Create User</div>
+                        <div class = "panel-body">
+                            <form action="{{ path_for('dashboard.user.create') }}" id="createUser" method="post">
+                                <div class="col-md-6">
+                                    <div class="form-group{{ errors.username ? ' has-error' : '' }}">
+                                        <label for="username">Username</label>
+                                        <input type="text" name="username" id="username" class="form-control border-input" placeholder="Username" value="{{ old.username }}">
+                                        {% if errors.username %}
+                                            <span class="help-block">{{ errors.username | first }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group{{ errors.email ? ' has-error' : '' }}">
+                                        <label for="email">Email</label>
+                                        <input type="email" name="email" id="email" class="form-control border-input" placeholder="you@domain.com" value="{{ old.email }}">
+                                        {% if errors.email %}
+                                            <span class="help-block">{{ errors.email | first }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group{{ errors.password ? ' has-error' : '' }}">
+                                        <label for="password">Password</label>
+                                        <input type="password" name="password" id="password" class="form-control border-input">
+                                        {% if errors.password %}
+                                            <span class="help-block">{{ errors.password | first }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group{{ errors.confirm ? ' has-error' : '' }}">
+                                        <label for="confirm">Confirm Password</label>
+                                        <input type="password" name="confirm" id="confirm" class="form-control border-input">
+                                        {% if errors.confirm %}
+                                            <span class="help-block">{{ errors.confirm | first }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                                {{  csrf.field | raw }}
+                            </form>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-info btn-fill btn-wd" form="createUser"><i class="ti-user"></i> Create</button>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block modal %}
+    <!-- Modals -->
+    <div class="modal fade" id="delete-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="ti-close"></i></span>
+                    </button>
+                    <h4 class="modal-title">Delete User</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-question"></p>
+                    <p>(This cannot be reversed.)</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info btn-fill" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success btn-fill" id="delete-confirm-button" data-dismiss="modal">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="delete-error" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="ti-close"></i></span>
+                    </button>
+                    <h4 class="modal-title">Delete User Error</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-error"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info btn-fill" data-dismiss="modal">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock modal %}
+
+{% block pagescripts %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#delete-confirm').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget);
+				var uuid = button.attr('id');
+				var username = button.data('username');
+
+				$('#delete-confirm-button').data('uuid', uuid);
+
+				var modal = $(this);
+				modal.find('.modal-question').text('Are you sure you want to delete ' + username + '?');
+			})
+
+			$('#delete-confirm-button').on('click', function(){
+				var uuid = $(this).data('uuid');
+				var route = '{{ path_for('api.user.delete', { 'uuid': 'uuid'}) }}';
+				var url = route.replace('uuid', uuid);
+				var token = $.cookie('token');
+
+				$.ajax({
+					url: url,
+					type: 'post',
+					beforeSend: function (request) {
+						request.setRequestHeader("Authorization", "Bearer " + token);
+						request.setRequestHeader("X-Http-Method-Override", "DELETE");
+					},
+					data: {_method: 'delete'}
+				})
+					.done(function (data, textStatus, xhr) {
+						if (xhr.status == 200) {
+							location.reload();
+						}
+					})
+					.fail(function (xhr) {
+						var ct = xhr.getResponseHeader("content-type") || "";
+						var modal = $('#delete-error').modal();
+						if ( ct.indexOf('json') > -1 ){
+							modal.find('.modal-error').text(xhr.responseJSON.errors);
+						} else {
+							modal.find('.modal-error').text(xhr);
+						}
+						modal.show();
+					})
+			})
+
+		});
+    </script>
+{% endblock pagescripts %}

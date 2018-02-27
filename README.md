@@ -18,6 +18,7 @@ The major components and relevant documentation are below:
 - Whoops (error reporting) https://github.com/filp/whoops
 - League\Event (event emitter) http://event.thephpleague.com/2.0/
 - League\CLImate (CLI output formatting) http://climate.thephpleague.com/
+- Swiftmailer (email) https://swiftmailer.symfony.com/
 
 
 ### Requirements

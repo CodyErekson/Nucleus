@@ -45,7 +45,15 @@
             </div>
         </div>
 
-        <div class="row{{ old.cpusername ? '' : ' hidden' }}" id="change-password">
+        {% if errors.cpusername or errors.cpresetcode or errors.cppassword or errors.cpconfirm %}
+        <div class="row" id="change-password">
+        {% else %}
+            {% if reset.username or reset.code %}
+                <div class="row" id="change-password">
+            {% else %}
+                <div class="row hidden" id="change-password">
+            {% endif %}
+        {% endif %}
             <div class="col-md-3"></div>
             <div class="col-md-6">
                 <div class="panel panel-default">
@@ -62,9 +70,15 @@
                             <div class="col-md-6">
                                 <div class="form-group{{ errors.cpusername ? ' has-error' : '' }}">
                                     <label for="cpusername">Username</label>
+                                    {% if old.cpusername %}
                                     <input type="text" name="cpusername" id="cpusername" class="form-control border-input"
                                            placeholder="Username" value="{{ old.cpusername }}" disabled>
                                     <input type="hidden" name="cpusername" id="cpusername-hidden" value="{{ old.cpusername }}"/>
+                                    {% else %}
+                                    <input type="text" name="cpusername" id="cpusername" class="form-control border-input"
+                                       placeholder="Username" value="{{ reset.username }}" disabled>
+                                    <input type="hidden" name="cpusername" id="cpusername-hidden" value="{{ reset.username }}"/>
+                                    {% endif %}
                                     {% if errors.cpusername %}
                                         <span class="help-block">{{ errors.cpusername | first }}</span>
                                     {% endif %}
@@ -84,8 +98,14 @@
                             <div class="col-md-6">
                                 <div class="form-group{{ errors.cpresetcode ? ' has-error' : '' }}">
                                     <label for="cpresetcode">Reset Code</label>
+                                    {% if old.cpresetcode %}
                                     <input type="text" name="cpresetcode" id="cpresetcode" class="form-control border-input"
                                            placeholder="Reset Code" value="{{ old.cpresetcode }}">
+                                    {% else %}
+                                    <input type="text" name="cpresetcode" id="cpresetcode" class="form-control border-input"
+                                           placeholder="Reset Code" value="{{ reset.code }}"{{ reset.code ? ' disabled' : '' }}>
+                                    <input type="hidden" name="cpresetcode" id="cpresetcode-hidden" value="{{ reset.code }}"/>
+                                    {% endif %}
                                     {% if errors.cpresetcode %}
                                         <span class="help-block">{{ errors.cpresetcode | first }}</span>
                                     {% endif %}
@@ -253,11 +273,15 @@
         {
         	message = message || 0;
 			var modal = $("#get-username").modal('show');
+			setTimeout(function(){
+				$("#newusername").focus();
+			}, 500);
 			if ( message == 0 ) {
 				modal.find('.modal-error').text('Please enter your username:');
 			} else {
 				modal.find('.modal-error').text(message);
             }
+            $("#forgot-password").attr("disabled", "disabled");
         }
 
         function sendResetCode(username)

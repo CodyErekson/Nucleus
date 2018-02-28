@@ -64,7 +64,17 @@ class AuthController extends BaseController
      */
     public function getLogin($request, $response)
     {
-        return $this->container->view->render($response, 'login.twig');
+        // This request might come from a password reset email
+        $arguments = [];
+        $params = $request->getQueryParams();
+        if ( isset($params['username']) ){
+            $arguments['reset']['username'] = $params['username'];
+        }
+        if ( isset($params['code']) ){
+            $arguments['reset']['code'] = $params['code'];
+        }
+
+        return $this->container->view->render($response, 'login.twig', $arguments);
     }
 
     /**

@@ -246,7 +246,8 @@ class User extends Model
                     $this->resetCode = ResetCode::create([
                         'uuid' => $this->uuid,
                         'code' => $code,
-                        'expiration' => date('Y-m-d H:i:s', time() + (3600 * 24 * 2))
+                        'expiration' => date('Y-m-d H:i:s', time() +
+                            (3600 * (int)getenv('RESET_CODE_LIFETIME')))
                     ]);
                 } else {
                     $this->resetCode->updateCode($code);
@@ -301,13 +302,25 @@ class User extends Model
 
         $mailer = $this->container->mailer;
 
-        $message = $this->container->email;
-        $message->setSubject('Temporary access key for ' . getenv('NAME'))
-            ->setFrom([getenv('APP_EMAIL_ADDRESS') => getenv('NAME')])
-            ->setTo([$this->email])
-            ->setBody("Your temporary access key is " . $code); //TODO -- figure out email templates
+        $mailer->message->setSubject('Password Reset Code Request for ' . getenv('NAME'));
+        $mailer->message->setFrom([getenv('APP_EMAIL_ADDRESS') => getenv('NAME')]);
+        $mailer->message->setTo([$this->email]);
 
-        return $mailer->send($message);
+        $arguments = [
+            'home' => getenv('BASE_URL'),
+            'app_name' => getenv('NAME'),
+            'username' => $this->username,
+            'copyright_year' => date('Y'),
+            'reset_code_lifetime' => (int)getenv('RESET_CODE_LIFETIME'),
+            'action_url' => getenv('BASE_URL') . $this->container->router->pathFor('auth.login')
+                . '?username=' . $this->username . '&code=' . $code,
+        ];
+
+        $mailer->htmlTemplate('password_reset.twig', $arguments);
+        $mailer->inlineStyle('password_reset.css');
+        $mailer->textTemplate('password_reset.txt', $arguments);
+
+        return $mailer->send();
     }
 
     /**

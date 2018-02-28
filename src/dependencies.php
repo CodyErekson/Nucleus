@@ -34,6 +34,13 @@ $container['background_process'] = $container->factory(function ($c) {
     return new \Nucleus\Helpers\BackgroundProcess();
 });
 
+/**
+ * Handle email
+ */
+$container['mailer'] = $container->factory(function ($c) {
+    return new \Nucleus\Helpers\Mailer($c);
+});
+
 /* Components */
 
 /**
@@ -165,7 +172,7 @@ $container['http_client'] = function () {
  * Email transport handler
  * @return Swift_Mailer
  */
-$container['mailer'] = function () {
+$container['transport'] = function () {
     // Sendmail
     if (getenv('MAIL_TRANSPORT') == "SENDMAIL") {
         $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -bs');
@@ -179,6 +186,14 @@ $container['mailer'] = function () {
 
 $container['email'] = function () {
     return new Swift_Message();
+};
+
+/**
+ * Used to convert CSS to inline styles for email
+ * @return \Pelago\Emogrifier
+ */
+$container['emogrifier'] = function () {
+    return new \Pelago\Emogrifier();
 };
 
 /**

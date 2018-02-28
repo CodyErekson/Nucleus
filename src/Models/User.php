@@ -126,7 +126,7 @@ class User extends Model
     }
 
     /**
-     * Find out if given role is already assign to the user
+     * Find out if given role is already assigned to the user
      * @param $role
      * @return mixed
      */
@@ -167,7 +167,7 @@ class User extends Model
         $role = \Nucleus\Models\Role::find($id);
         if ($role->role == "guest") {
             // Do not do anything with guest role
-            return true;
+            return false;
         }
         if (is_null($role)) {
             return false;

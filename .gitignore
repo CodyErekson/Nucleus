@@ -19,6 +19,7 @@ phpunit.xml
 public/source
 public/assets/
 dev/assets/min.js/bundle.min.js
+dev/source
 
 
 # Compiled source #

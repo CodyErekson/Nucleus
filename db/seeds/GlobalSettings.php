@@ -57,6 +57,11 @@ class GlobalSettings extends AbstractSeed
                 "setting" => "APP_EMAIL_ADDRESS",
                 "value" =>  "nucleus@nucleus.com",
                 "env" => true
+            ],
+            [
+                "setting" => "RESET_CODE_LIFETIME",
+                "value" => 24,
+                "env" => true
             ]
         ];
         $table = $this->table('settings');

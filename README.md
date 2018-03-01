@@ -25,6 +25,7 @@ The major components and relevant documentation are below:
 
 - PHP >= 7.1
 - Composer
+- NPM
 - MariaDB 10.1.30 or equivalent
 
 
@@ -45,6 +46,8 @@ If you want to insert the data that I initially use (some users and role associa
 `php vendor/bin/phinx seed:run -s UserSeeder`
 
 `php vendor/bin/phinx seed:run -s UserRoleSeeder`
+
+`php vendor/bin/phinx seed:run -s GlobalSettings`
  
 Finally, update `composer.json` to reflect your application's details.
 

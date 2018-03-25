@@ -108,7 +108,10 @@ foreach ($logs as $log) {
         $path = realpath($env['env_path'] . getenv('LOGS_ROOT')) . '/' . $log_name;
         $logger = new Monolog\Logger($log_name);
         $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-        $logger->pushHandler(new Monolog\Handler\StreamHandler($path, $settings['level']));
+        $handler = new Monolog\Handler\StreamHandler($path, $settings['level']);
+        $formatter = new Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
         return $logger;
     };
 }

@@ -43,7 +43,14 @@ session_start();
 $env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../config'), ENVFILE);
 $env->load();
 
+/**
+ * A few "hard-coded" ENV vars
+ */
 putenv("SRC_ROOT=" . __DIR__);
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || (int)$_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+putenv("PROTOCOL=" . $protocol);
+putenv("DOMAIN=" . $_SERVER['HTTP_HOST']);
+putenv("BASE_URL=" . getenv('PROTOCOL') . getenv('DOMAIN'));
 
 /**
  * Instantiate Slim framework app

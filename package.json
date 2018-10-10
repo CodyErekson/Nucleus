@@ -37,18 +37,6 @@
     "jquery.cookie": "^1.4.1"
   },
   "scripts": {
-    "build:css:prefix": "postcss -r dev/assets/css/*.css --use autoprefixer --autoprefixer.browsers 'last 2 versions'",
-    "build:css:combine": "find dev/assets/css/ -iname *.css ! -name style.css -print0 | sort -z | xargs -0 cat > dev/assets/css/style.css",
-    "build:css:minify": "cssmin dev/assets/css/style.css > public/assets/css/style.min.css && rm dev/assets/css/style.css",
-    "build:css": "npm run build:css:prefix && npm run build:css:combine && npm run build:css:minify",
-    "build:js:acquire": "./copyjs.sh",
-    "build:js:minify": "uglifyjs $(find dev/assets/js -type f -iname \"*.js\") --compress --mangle -o dev/assets/min.js/bundle.min.js",
-    "build:js:copy": "find dev/assets/min.js -type f -name \"*.js\" -exec cp '{}' public/assets/js/ \\;",
-    "build:js": "npm run build:js:acquire && npm run build:js:minify && npm run build:js:copy",
-    "build:img": "cp -r dev/assets/img/ public/assets/",
-    "build:fonts": "cp -r dev/assets/fonts/ public/assets/",
-    "build:mkdir": "mkdir -p public/assets/ && mkdir -p public/assets/css/ && mkdir -p public/assets/js/",
-    "build": "npm run build:mkdir && npm run build:css && npm run build:js && npm run build:img && npm run build:fonts",
     "test": "whoami"
   }
 }

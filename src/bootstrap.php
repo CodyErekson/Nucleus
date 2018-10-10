@@ -7,14 +7,24 @@ use Slim\App;
 use \Firebase\JWT\JWT;
 use \dBug\dBug;
 
-if (PHP_SAPI == 'cli-server') {
+if (PHP_SAPI == "cli-server"){
     // To help the built-in PHP dev server, check if the request was actually for
     // something which should probably be served as a static file
     $url  = parse_url($_SERVER['REQUEST_URI']);
-    $file = __DIR__ . $url['path'];
+    $file = getenv('SRC_ROOT') . $url['path'];
     if (is_file($file)) {
         return false;
     }
+} else if (PHP_SAPI == "cli") {
+    // Via web server
+    putenv("PROTOCOL=cli://");
+    putenv("DOMAIN=localhost");
+    putenv("BASE_URL=" . getenv('PROTOCOL') . getenv('DOMAIN'));
+} else {
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || (int)$_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    putenv("PROTOCOL=" . $protocol);
+    putenv("DOMAIN=" . $_SERVER['HTTP_HOST']);
+    putenv("BASE_URL=" . getenv('PROTOCOL') . getenv('DOMAIN'));
 }
 
 /**
@@ -43,7 +53,12 @@ session_start();
 $env = new \Dotenv\Dotenv(realpath(__DIR__ . '/../config'), ENVFILE);
 $env->load();
 
-putenv("SRC_ROOT=" . __DIR__);
+/**
+ * Set template if not defined
+ */
+if ( !getenv('TEMPLATE') ){
+    putenv('TEMPLATE=default');
+}
 
 /**
  * Instantiate Slim framework app

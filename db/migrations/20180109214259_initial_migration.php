@@ -38,21 +38,6 @@ class InitialMigration extends AbstractMigration
 		$table->addColumn('role', 'string')
 			->create();
 
-		// Add roles
-		$roles = [
-			[
-				'role' => 'guest'
-			],
-			[
-				'role' => 'member'
-			],
-			[
-				'role' => 'admin'
-			]
-		];
-		$table->insert($roles);
-		$table->saveData();
-
 		$table =$this->table('role_user');
 		$table->addColumn('user_uuid', 'string')
 			->addColumn('role_id', 'integer')

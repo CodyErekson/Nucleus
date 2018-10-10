@@ -11,11 +11,18 @@ if (!function_exists('d')) {
      * @param  mixed
      * @return void
      */
-    function d(... $args)
+    function d()
     {
-        foreach ($args as $x) {
-            (new Illuminate\Support\Debug\Dumper)->dump($x);
-        }
+        array_map(function ($value) {
+            if (class_exists(Symfony\Component\VarDumper\Dumper\CliDumper::class)) {
+                $dumper = 'cli' === PHP_SAPI ?
+                    new Symfony\Component\VarDumper\Dumper\CliDumper :
+                    new Symfony\Component\VarDumper\Dumper\HtmlDumper;
+                $dumper->dump((new Symfony\Component\VarDumper\Cloner\VarCloner)->cloneVar($value));
+            } else {
+                var_dump($value);
+            }
+        }, func_get_args());
     }
 }
 
@@ -26,15 +33,19 @@ if (!function_exists('dd')) {
      * @param  mixed
      * @return void
      */
-    function dd(... $args)
+    function dd()
     {
-        function d(... $args)
-        {
-            foreach ($args as $x) {
-                (new Illuminate\Support\Debug\Dumper)->dump($x);
+        array_map(function ($value) {
+            if (class_exists(Symfony\Component\VarDumper\Dumper\CliDumper::class)) {
+                $dumper = 'cli' === PHP_SAPI ?
+                    new Symfony\Component\VarDumper\Dumper\CliDumper :
+                    new Symfony\Component\VarDumper\Dumper\HtmlDumper;
+                $dumper->dump((new Symfony\Component\VarDumper\Cloner\VarCloner)->cloneVar($value));
+            } else {
+                var_dump($value);
             }
-        }
-        die();
+        }, func_get_args());
+        die(1);
     }
 }
 

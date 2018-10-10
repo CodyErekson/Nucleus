@@ -6,32 +6,28 @@
 /**
  * Configure JSON Web Token handling
  */
-$app->add(new \Slim\Middleware\JwtAuthentication([
+$app->add(new \Tuupola\Middleware\JwtAuthentication([
     "secret" => base64_encode(getenv('JWT_SECRET')),
     "secure" => false,
     "cookie" => "token",
     "attribute" => "jwt",
     "path" => ["/"],
-    "passthrough" => ["/favicon.ico"],  //WTH? This shouldn't need to be here
+    "ignore" => [
+        "/favicon.ico",
+        "/",
+        "/api/user/login/",
+        "/login/",
+        "/register/",
+        "/login/reset/",
+        "/api/user/check/{email}/",
+        "/api/user/{email}/reset/email/",
+        "/home/",
+        "/about/",
+        "/contact/"
+    ],
+    "logger" => $container['debug.log'],
     "algorithm" => 'HS256',
     "relaxed" => ["localhost", getenv('DOMAIN')],
-    "rules" => [
-        new \Nucleus\Helpers\RequestSessionRule(
-            $container,
-            [
-                "/",
-                "/api/user/login/",
-                "/auth/login/",
-                "/auth/signup/",
-                "/auth/login/reset/",
-                "/api/user/{uuid}/reset/",
-                "/api/user/{email}/reset/email/",
-                "/api/user/{username}/reset/username/",
-                "/api/user/{username}/check/"
-            ]
-        ),
-        new \Slim\Middleware\JwtAuthentication\RequestPathRule()
-    ],
     "callback" => function ($request, $response, $arguments) use ($container) {
         $container['token'] = $arguments["decoded"];
         // Login user (create session) if token is valid
@@ -46,6 +42,9 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
         }
         $container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\n"
             . json_encode($arguments['decoded']->data->user->uuid));
+    },
+    "after" => function ($request, $response, $arguments) use ($container) {
+        $container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nVerified authentication");
     },
     "error" => function ($request, $response, $arguments) use ($container) {
         $data["status"] = "error";
@@ -80,14 +79,13 @@ $app->add(new \Nucleus\Middleware\CsrfMiddleware($container));
 $app->add(new \Nucleus\Middleware\CorsMiddleware($container));
 
 // IP filtering middlewares
+$ip_whitelist = $ip_blacklist = [];
 if ($container->db->schema()->hasTable('settings')) {
     $ip_whitelist = explode(',', $container['global_settings']['IP_WHITELIST']);
     $ip_blacklist = explode(',', $container['global_settings']['IP_BLACKLIST']);
-} else {
-    $ip_whitelist = $ip_blacklist = [];
 }
 $app->add(new \Nucleus\Middleware\IpFilterMiddleware($container, $ip_whitelist, $ip_blacklist));
-$app->add(new RKA\Middleware\IpAddress(true));
+$app->add(new RKA\Middleware\IpAddress(false));
 
 // CLI runner middleware
 $app->add(\adrianfalleiro\SlimCLIRunner::class);

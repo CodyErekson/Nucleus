@@ -37,6 +37,7 @@ return [
         // Application commands
         'user:create' => \Nucleus\Helpers\Commands\UserCreateCommand::class,
         'user:edit' => \Nucleus\Helpers\Commands\UserEditCommand::class,
-        'test' => \Nucleus\Helpers\Commands\TestCommand::class
+        'cli-test' => \Nucleus\Helpers\Commands\TestCommand::class,
+        'help' => \Nucleus\Helpers\Commands\HelpCommand::class
     ],
 ];

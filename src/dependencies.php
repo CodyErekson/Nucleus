@@ -58,7 +58,7 @@ $container['flash'] = function () {
  */
 $container['view'] = function ($c) {
     $env = $c->get('settings')['env'];
-    $view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates'), [
+    $view = new \Slim\Views\Twig(realpath($env['env_path'] . '/src/View/templates/' . getenv('TEMPLATE')), [
         //'cache' => realpath($env['env_path'] . '/src/View/cache'),
         'auto_reload' => ( getenv('ENV') == 'development' ? true : false ),
         'strict_variables' => ( getenv('ENV') == 'development' ? false : true ),
@@ -108,7 +108,10 @@ foreach ($logs as $log) {
         $path = realpath($env['env_path'] . getenv('LOGS_ROOT')) . '/' . $log_name;
         $logger = new Monolog\Logger($log_name);
         $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-        $logger->pushHandler(new Monolog\Handler\StreamHandler($path, $settings['level']));
+        $handler = new Monolog\Handler\StreamHandler($path, $settings['level']);
+        $formatter = new Monolog\Formatter\LineFormatter(null, null, true, true);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
         return $logger;
     };
 }
@@ -181,7 +184,11 @@ $container['transport'] = function () {
     if (getenv('MAIL_TRANSPORT') == "SENDMAIL") {
         $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -bs');
     } elseif (getenv('MAIL_TRANSPORT') == "SMTP") {
-        $transport = new Swift_SmtpTransport(getenv('SMTP_SERVER'), (int)getenv('SMTP_PORT'));
+        if ( getenv('SMTP_SSL') ){
+            $transport = new Swift_SmtpTransport(getenv('SMTP_SERVER'), (int)getenv('SMTP_PORT', 'ssl'));
+        } else {
+            $transport = new Swift_SmtpTransport(getenv('SMTP_SERVER'), (int)getenv('SMTP_PORT'));
+        }
     } else {
         return null;
     }
@@ -203,10 +210,10 @@ $container['emogrifier'] = function () {
 /**
  * UUID generator
  * @return \Ramsey\Uuid\UuidInterface
+ * @throws Exception
  */
 $container['uuid'] = function () {
     return Ramsey\Uuid\Uuid::uuid4();
-    //return Ramsey\Uuid\Uuid;
 };
 
 /**
@@ -223,6 +230,14 @@ $container['emitter'] = function () {
  */
 $container['cli'] = function () {
     return new League\CLImate\CLImate;
+};
+
+/**
+ * YAML parser
+ * @return \Symfony\Component\Yaml\Yaml
+ */
+$container['yaml'] = function () {
+    return new Symfony\Component\Yaml\Yaml;
 };
 
 /**

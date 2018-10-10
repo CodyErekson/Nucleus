@@ -1,32 +1,126 @@
 #!/usr/bin/env bash
 
 PHP_BINARY="${PHP_BINARY:-/usr/bin/php}"
-DOC_ROOT="../public"
-VENDOR_PATH="../vendor"
 
-PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+# Define paths
+export PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE[0]}")/../" ; pwd -P )
 
+export THIS=$0
 
-if [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phinx" ] && [ "$1" = "db" ]
+export DOC_ROOT="public"
+export VENDOR_PATH="vendor"
+export NODE_BIN_PATH="node_modules/.bin"
+export TEMPLATE_PATH="dev/templates"
+export ASSETS_PATH="dev/assets"
+export ENVIRONMENT="development"
+
+set -o allexport
+source "$PARENT_PATH/config/.env"
+set +o allexport
+
+export PATH="$PATH:$PARENT_PATH/$NODE_BIN_PATH:$PARENT_PATH/$VENDOR_PATH/bin"
+
+# Colors
+export RED='\033[0;31m'
+export YELLOW='\033[0;33m'
+export GREEN='\033[0;32m'
+export NC='\033[0m' # No Color
+
+if [ -x "$(command -v phinx)" ] && [ "$1" = "db" ]
 then
 	shift
 	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" "$@"
 	exit
-elif [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phpunit" ] && [ "$1" = "test" ]
+elif [ -x "$(command -v phinx)" ] && [ "$1" = "db:setup" ]
+then
+	# Make sure we have deps
+	if  [ -x "$(command -v npm)" ]
+	then
+		"npm install"
+	fi
+	# TODO -- environment as parameter
+	# Migrate
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" migrate -e "$ENVIRONMENT"
+	# Seed
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" seed:run -s GlobalSettings
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" seed:run -s Roles
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" seed:run -s Users
+	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phinx" seed:run -s RoleUser
+
+	exit
+elif [ -x "$(command -v phpunit)" ] && [ "$1" = "test" ]
 then
 	shift
 	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpunit" "$@"
 	exit
-elif [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phpcs" ] && [ "$1" = "cs" ]
+elif [ -x "$(command -v phpcs)" ] && [ "$1" = "cs" ]
 then
 	shift
 	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpcs" "$@"
 	exit
-elif [ -e "$PARENT_PATH/$VENDOR_PATH/bin/phpcbf" ] && [ "$1" = "csfix" ]
+elif [ -x "$(command -v phpcbf)" ] && [ "$1" = "csfix" ]
 then
 	shift
 	$PHP_BINARY "$PARENT_PATH/$VENDOR_PATH/bin/phpcbf" "$@"
 	exit
-else
+elif [ "$1" = "build" ]
+then
+	"$THIS" build:css
+	"$THIS" build:js
+	"$THIS" build:assets
+	"$THIS" build:deploy
+	rm -rf "$PARENT_PATH/$ASSETS_PATH/"
+	exit
+elif [ "$1" = "build:css" ]
+then
+	rm -rf "$PARENT_PATH/$ASSETS_PATH/css/"
+	mkdir -p "$PARENT_PATH/$ASSETS_PATH/css"
+	"$PARENT_PATH/$TEMPLATE_PATH/$TEMPLATE/bin/css.sh"
+	exit
+elif [ "$1" = "build:js" ]
+then
+	rm -rf "$PARENT_PATH/$ASSETS_PATH/js/"
+	mkdir -p "$PARENT_PATH/$ASSETS_PATH/js"
+	"$PARENT_PATH/$TEMPLATE_PATH/$TEMPLATE/bin/js.sh"
+	exit
+elif [ "$1" = "build:assets" ]
+then
+	"$PARENT_PATH/$TEMPLATE_PATH/$TEMPLATE/bin/assets.sh"
+	exit
+elif [ "$1" = "build:deploy" ]
+then
+	"$PARENT_PATH/$TEMPLATE_PATH/$TEMPLATE/bin/deploy.sh"
+	exit
+elif  [ -x "$(command -v npm)" ] && [ "$1" = "npm" ]
+then
+	shift
+	"npm" "$@"
+	exit
+elif [ "$1" = "composer" ]
+then
+	if [ -e "$PARENT_PATH/composer.phar" ]
+	then
+		shift
+		$PHP_BINARY "$PARENT_PATH/composer.phar" "$@"
+		exit
+	elif [ -x "$(command -v composer)" ]
+	then
+		shift
+		"composer" "$@"
+		exit
+	else
+		echo "Composer was not found"
+		exit 1
+	fi
+elif [ $# -eq 0 ] || [ "$1" = "help" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]
+then
+	$PHP_BINARY "$PARENT_PATH/$DOC_ROOT/index.php" "help"
+	exit
+elif [ $# -ne 0 ]
+then
 	$PHP_BINARY "$PARENT_PATH/$DOC_ROOT/index.php" "$@"
+	exit
+else
+	$PHP_BINARY "$PARENT_PATH/$DOC_ROOT/index.php" "help"
+	exit
 fi

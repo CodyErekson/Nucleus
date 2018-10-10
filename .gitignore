@@ -16,10 +16,16 @@ composer.lock
 logs/**.log
 phinx.yml
 phpunit.xml
-public/source
-public/assets/
-dev/assets/min.js/bundle.min.js
+public/
+!public/.htaccess
+!public/index.php
+!public/phpinfo.php
+dev/assets/
 dev/source
+!db/migrations/*
+!db/seeds/*
+data/images/*
+!/data/images/.gitkeep
 
 
 # Compiled source #

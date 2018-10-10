@@ -1,6 +1,6 @@
 {
-    "name": "chillem/nucleus",
-    "description": "PHP application scaffold",
+    "name": "chillem/dope",
+    "description": "Dope Game Core",
     "keywords": ["PHP", "Slim", "API", "framework", "Twig", "Bootstrap"],
     "license": "MIT",
     "authors": [
@@ -16,11 +16,10 @@
         "monolog/monolog": "^1.17",
         "vlucas/phpdotenv": "^2.4.0",
         "illuminate/database": "^5.5",
-        "robmorgan/phinx": "^0.9.2",
+        "robmorgan/phinx": "^0.10.6",
         "firebase/php-jwt": "^5.0",
-        "tuupola/slim-jwt-auth": "^2.3",
+        "tuupola/slim-jwt-auth": "^3.1",
         "ramsey/uuid": "^3.7",
-        "dopesong/slim-whoops": "^2.2",
         "slim/twig-view": "^2.3",
         "chillem/dbug": "dev-master",
         "respect/validation": "^1.1",
@@ -32,9 +31,12 @@
         "akrabat/ip-address-middleware": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
         "swiftmailer/swiftmailer": "^6.0",
-        "pelago/emogrifier": "^2.0"
+        "pelago/emogrifier": "^2.0",
+        "symfony/yaml": "^4.1",
+        "gumlet/php-image-resize": "1.9.*"
     },
     "require-dev": {
+        "dopesong/slim-whoops": "^2.2",
         "phpunit/phpunit": "^6.5",
         "squizlabs/php_codesniffer": "*"
     },
@@ -58,5 +60,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "version": "1.1.0"
+    "version": "0.1.0"
 }

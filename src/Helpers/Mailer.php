@@ -24,6 +24,7 @@ class Mailer
     {
         $this->container = $container;
         $this->message = $this->container->email;
+        //$this->path = "/" . getenv('TEMPLATE') . "/email/";
     }
 
     /**
@@ -36,7 +37,7 @@ class Mailer
     private function parseTemplate($type = 'html', $file, $arguments = [])
     {
         // Get file path
-        if ( !$filepath = realpath(__DIR__ . '/../View/templates' . $this->path . $file) ){
+        if ( !$filepath = realpath(__DIR__ . '/../View/templates/' . getenv('TEMPLATE') . $this->path . $file) ){
             $this->$type = null;
             return false;
         }
@@ -122,7 +123,7 @@ class Mailer
      */
     public function inlineStyle($css_file)
     {
-        if ( !$filepath = realpath(__DIR__ . '/../View/templates/email/' . $css_file) ){
+        if ( !$filepath = realpath(__DIR__ . '/../View/templates/' . getenv('TEMPLATE') . $this->path . $css_file) ){
             return false;
         }
 
@@ -142,6 +143,8 @@ class Mailer
      */
     public function send()
     {
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nHTML: " . $this->html);
+        $this->container['debug.log']->debug(__FILE__ . " on line " . __LINE__ . "\nText: " . $this->text);
         if ( ( !is_null($this->html) ) && ( !is_null($this->text) ) ){
             // We have both HTML and text formats
             $this->message->setBody($this->html, 'text/html');
